@@ -1,4 +1,11 @@
-const { ApolloServer, gql } = require('apollo-server-lambda');
+/**
+ * To run this graph, you'll need an API key from Propublica.
+ * Fetch an API Key from them for free (super easy): https://www.propublica.org/datastore/api/propublica-congress-api
+ * and add it to your environment variables as PROPUBLICA_KEY
+ */
+
+const { ApolloServer, gql } = require('apollo-server');
+//  const { ApolloServer, gql } = require('apollo-server-lambda');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
 const {
@@ -31,7 +38,7 @@ const typeDefs = gql`
   type ChamberVote {
     congress: Int
     session: Int
-    chamber: String
+    chamber: Chamber
     rollCall: Int
     source: String
     url: String
@@ -87,37 +94,6 @@ const typeDefs = gql`
     sponsorTitle: String
     sponsor: String
     sponsorId: ID
-    # # sponsor_uri: 'https://api.propublica.org/congress/v1/members/S000148.json',
-    # sponsor_party: Party
-    # sponsor_state: String
-    # gpo_pdf_uri: null,
-    # congressdotgov_url: 'https://www.congress.gov/bill/116th-congress/senate-bill/4653',
-    # govtrack_url: 'https://www.govtrack.us/congress/bills/116/s4653',
-    # introduced_date: '2020-09-22',
-    # active: true,
-    # last_vote: '2020-10-01',
-    # house_passage: null,
-    # senate_passage: null,
-    # enacted: null,
-    # vetoed: null,
-    # cosponsors: 0,
-    # cosponsors_by_party: {},
-    # withdrawn_cosponsors: 0,
-    # primary_subject: '',
-    # committees: '',
-    # committee_codes: [],
-    # subcommittee_codes: [],
-    # latest_major_action_date: '2020-10-01',
-    # latest_major_action: 'Cloture on the motion to proceed to the measure not invoked in Senate by Yea-Nay Vote. 51 - 43. Record Vote Number: 200. (CR S6015)',
-    # house_passage_vote: null,
-    # senate_passage_vote: null,
-    # summary: '',
-    # summary_short: '',
-    # cbo_estimate_url: null,
-    # versions: [Array],
-    # actions: [Array],
-    # presidential_statements: [],
-    # votes: [Array]
   }
 
   type Nomination {
@@ -153,7 +129,7 @@ const typeDefs = gql`
 
   type MemberVote {
     memberId: ID
-    chamber: String
+    chamber: Chamber
     congress: String
     session: String
     rollCall: String
@@ -208,13 +184,13 @@ const typeDefs = gql`
     googleEntityId: ID
     cspanId: ID
     govtrackId: ID
-    # extended
-    # totalVotes: Int
   }
 
   """
-  Metadata for each member of the United States Congress, provided by ProPublica.
-  Fetched through https://api.propublica.org/congress/v1/members/\${MEMBER_ID}.json
+  Fetch data for members of congress individually. This field resolves via:
+  https://api.propublica.org/congress/v1/members/\${MEMBER_ID}.json
+
+  Use id=H001075 to fetch data for Kamala Harris.
   """
   type MemberDetails implements Member {
     # copied from Member Interface
@@ -254,7 +230,7 @@ const typeDefs = gql`
   """
   type MemberDetailsRole {
     congress: String
-    chamber: String
+    chamber: Chamber
     title: String
     shortTitle: String
     state: String
@@ -345,19 +321,26 @@ const typeDefs = gql`
   }
 
   type Location @key(fields: "streetAddress") {
-    # ID here is a full street address that we could use to look up metadata
+    """
+    A street addres that can be recognized by mapping engines.
+    """
     streetAddress: String!
   }
 
   type Congress {
     congress: String
-    chamber: String
+    chamber: Chamber
     numResults: Int
     offset: Int
     members: [CongressMember]
   }
 
-    input CongressInput {
+  """
+  Congressional data provided by ProPublica: https://projects.propublica.org/api-docs/congress-api/.
+  This data is updated daily.
+  """
+  type Query {
+    congress(
       """
       Specifies which session of Congress, e.g. 117
       """
@@ -366,15 +349,7 @@ const typeDefs = gql`
       Specifies which chamber of Congress, HOUSE or SENATE
       """
       chamber: Chamber = SENATE
-    }
-
-  """
-  A GraphQL interface for congressional data exposed by ProPublica: https://projects.propublica.org/api-docs/congress-api/.
-  Congressional data is updated daily.
-  Fetch an API Key from them for free: https://www.propublica.org/datastore/api/propublica-congress-api
-  """
-  type Query {
-    congress(CongressInput): [Congress]
+    ): [Congress]
     memberById(id: ID!): MemberDetails
   }
 `;
@@ -505,26 +480,36 @@ const resolvers = {
   }
 };
 
-const getHandler = (event, context) => {
-  const server = new ApolloServer({
-    apollo: {
-      graphRef: 'simple-servers@congress'
-    },
-    schema: buildSubgraphSchema({ typeDefs, resolvers }),
-    plugins: [
-      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-      ApolloServerPluginInlineTrace(),
-      ApolloServerPluginUsageReporting({
-        // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
-      })
-    ]
+// const getHandler = (event, context) => {
+const server = new ApolloServer({
+  apollo: {
+    graphRef: 'simple-servers@congress'
+  },
+  schema: buildSubgraphSchema({ typeDefs, resolvers }),
+  plugins: [
+    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ApolloServerPluginInlineTrace(),
+    ApolloServerPluginUsageReporting({
+      // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+    })
+  ]
+});
+
+server
+  .listen({
+    port: process.env.PORT || 4000
+  })
+  .then(({ port }) => {
+    console.log(`🚀  Server is running!
+📭  Query at https://studio.apollographql.com/dev
+🔉  Listening on port ${port}`);
   });
 
-  const graphqlHandler = server.createHandler();
-  if (!event.requestContext) {
-    event.requestContext = context;
-  }
-  return graphqlHandler(event, context);
-};
+//   const graphqlHandler = server.createHandler();
+//   if (!event.requestContext) {
+//     event.requestContext = context;
+//   }
+//   return graphqlHandler(event, context);
+// };
 
-exports.handler = getHandler;
+// exports.handler = getHandler;
