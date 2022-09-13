@@ -1,9 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
-const utils = require('./utils');
-
-const testy = (str) => str + 'hello';
+const utils = require('../utils');
 
 const typeDefs = gql`
   extend schema
@@ -14,26 +12,39 @@ const typeDefs = gql`
 
   type Address @key(fields: "id") {
     id: String!
-    latitude: Float
-    longitude: Float
-    neighbourhood: String
-    region: String
-    county: String
-    country: String
-    continent: String
+    latitude: Float @federation__external
+    longitude: Float @federation__external
+    daylight: Daylight @federation__requires(fields: "latitude longitude")
+  }
+
+  # Data from https://sunrise-sunset.org/api
+  # All times shown in UTC
+  type Daylight {
+    sunrise: String
+    sunset: String
+    solarNoon: String
+    dayLength: String
+    civilTwilightBegin: String
+    civilTwilightEnd: String
+    nauticalTwilightBegin: String
+    nauticalTwilightEnd: String
+    astronomicalTwilightBegin: String
+    astronomicalTwilightEnd: String
   }
 `;
 
 const resolvers = {
   Address: {
-    __resolveReference: async ({ id }) => {
+    __resolveReference: async ({ latitude, longitude }) => {
       return await fetch(
-        `https://positionstack.com/geo_api.php?query=${encodeURI(id)}`
+        `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}`
       )
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return utils.snakeToCamel(response.data[0]);
+            return {
+              daylight: utils.snakeToCamel(response.results)
+            };
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
@@ -48,6 +59,6 @@ const server = new ApolloServer({
 });
 
 // The `listen` method launches a web server.
-server.listen({ port: 4001 }).then(({ url }) => {
+server.listen({ port: 4003 }).then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });

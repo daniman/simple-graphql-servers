@@ -1,7 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
-const utils = require('./utils');
+const utils = require('../utils');
 
 const typeDefs = gql`
   extend schema
