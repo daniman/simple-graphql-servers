@@ -48,13 +48,16 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({
-  schema: buildSubgraphSchema({ typeDefs, resolvers })
-});
+const getHandler = (event, context) => {
+  const server = new ApolloServer({
+    schema: buildSubgraphSchema({ typeDefs, resolvers })
+  });
 
-exports.handler = server.createHandler();
+  const graphqlHandler = server.createHandler();
+  if (!event.requestContext) {
+    event.requestContext = context;
+  }
+  return graphqlHandler(event, context);
+};
 
-// The `listen` method launches a web server.
-// server.listen({ port: process.env.PORT || 4002 }).then(({ url }) => {
-//   console.log(`🚀  Server ready at ${url}`);
-// });
+exports.handler = getHandler;
