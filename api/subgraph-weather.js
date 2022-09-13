@@ -60,7 +60,7 @@ const getHandler = (event, context) => {
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
       ApolloServerPluginInlineTrace(),
       ApolloServerPluginUsageReporting({
-        endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+        // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
       })
     ]
   });
