@@ -37,7 +37,7 @@ const typeDefs = gql`
   type ChamberVote {
     congress: Int
     session: Int
-    chamber: Chamber
+    chamber: String
     rollCall: Int
     source: String
     url: String
@@ -128,7 +128,7 @@ const typeDefs = gql`
 
   type MemberVote {
     memberId: ID
-    chamber: Chamber
+    chamber: String
     congress: String
     session: String
     rollCall: String
@@ -229,7 +229,7 @@ const typeDefs = gql`
   """
   type MemberDetailsRole {
     congress: String
-    chamber: Chamber
+    chamber: String
     title: String
     shortTitle: String
     state: String
@@ -328,7 +328,7 @@ const typeDefs = gql`
 
   type Congress {
     congress: String
-    chamber: Chamber
+    chamber: String
     numResults: Int
     offset: Int
     members: [CongressMember]
@@ -487,10 +487,10 @@ const getHandler = (event, context) => {
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
     plugins: [
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-      ApolloServerPluginInlineTrace(),
-      ApolloServerPluginUsageReporting({
-        // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
-      })
+      ApolloServerPluginInlineTrace()
+      // ApolloServerPluginUsageReporting({
+      //   // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+      // })
     ]
   });
 
@@ -500,7 +500,7 @@ const getHandler = (event, context) => {
   //   })
   //   .then(({ port }) => {
   //     console.log(`🚀  Server is running!
-  // 🔉  Listening on port ${port}`);
+  //   🔉  Listening on port ${port}`);
   //   });
 
   const graphqlHandler = server.createHandler();
