@@ -4,8 +4,7 @@
  * and add it to your environment variables as PROPUBLICA_KEY
  */
 
-const { ApolloServer, gql } = require('apollo-server');
-//  const { ApolloServer, gql } = require('apollo-server-lambda');
+const { ApolloServer, gql } = require('apollo-server-lambda');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
 const {
@@ -480,36 +479,35 @@ const resolvers = {
   }
 };
 
-// const getHandler = (event, context) => {
-const server = new ApolloServer({
-  apollo: {
-    graphRef: 'simple-servers@congress'
-  },
-  schema: buildSubgraphSchema({ typeDefs, resolvers }),
-  plugins: [
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ApolloServerPluginInlineTrace(),
-    ApolloServerPluginUsageReporting({
-      // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
-    })
-  ]
-});
-
-server
-  .listen({
-    port: process.env.PORT || 4000
-  })
-  .then(({ port }) => {
-    console.log(`🚀  Server is running!
-📭  Query at https://studio.apollographql.com/dev
-🔉  Listening on port ${port}`);
+const getHandler = (event, context) => {
+  const server = new ApolloServer({
+    apollo: {
+      graphRef: 'simple-servers@congress'
+    },
+    schema: buildSubgraphSchema({ typeDefs, resolvers }),
+    plugins: [
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+      ApolloServerPluginInlineTrace(),
+      ApolloServerPluginUsageReporting({
+        // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+      })
+    ]
   });
 
-//   const graphqlHandler = server.createHandler();
-//   if (!event.requestContext) {
-//     event.requestContext = context;
-//   }
-//   return graphqlHandler(event, context);
-// };
+  // server
+  //   .listen({
+  //     port: process.env.PORT || 4000
+  //   })
+  //   .then(({ port }) => {
+  //     console.log(`🚀  Server is running!
+  // 🔉  Listening on port ${port}`);
+  //   });
 
-// exports.handler = getHandler;
+  const graphqlHandler = server.createHandler();
+  if (!event.requestContext) {
+    event.requestContext = context;
+  }
+  return graphqlHandler(event, context);
+};
+
+exports.handler = getHandler;
