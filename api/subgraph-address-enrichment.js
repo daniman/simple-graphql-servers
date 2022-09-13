@@ -58,9 +58,7 @@ const getHandler = (event, context) => {
     plugins: [
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
       ApolloServerPluginInlineTrace(),
-      ApolloServerPluginUsageReporting({
-        // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
-      })
+      ApolloServerPluginUsageReporting()
     ]
   });
 
