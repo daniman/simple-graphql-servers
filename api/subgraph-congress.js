@@ -353,7 +353,7 @@ const typeDefs = gql`
       """
       Specifies which session of Congress, e.g. 117
       """
-      congress: Int = 117
+      session: Int = 117
       """
       Specifies which chamber of Congress, HOUSE or SENATE
       """
@@ -370,16 +370,14 @@ const headers = {
 
 const resolvers = {
   Query: {
-    congress: async (_, args) => {
-      if (!args.congress)
+    congress: async (_, { session, chamber }) => {
+      if (!session)
         throw new Error('Congress session must be specified, eg. 117');
-      if (!args.chamber)
+      if (!chamber)
         throw new Error('Congress chamber must be specified, eg. SENATE');
 
       return await fetch(
-        `https://api.propublica.org/congress/v1/${
-          args.congress
-        }/${args.chamber.toLowerCase()}/members.json`,
+        `https://api.propublica.org/congress/v1/${session}/${chamber.toLowerCase()}/members.json`,
         {
           headers
         }
