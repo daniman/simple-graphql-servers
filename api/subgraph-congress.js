@@ -323,7 +323,7 @@ const typeDefs = gql`
     """
     A street addres that can be recognized by mapping engines.
     """
-    streetAddress: String!
+    streetAddress: String
   }
 
   type Congress {
@@ -409,9 +409,12 @@ const resolvers = {
   },
   CongressMember: {
     // we do this so we can make `id` a @key for federation
-    office: ({ office }) => ({
-      streetAddress: office
-    })
+    office: ({ office }) =>
+      office
+        ? {
+            streetAddress: office
+          }
+        : null
   },
   MemberVote: {
     vote: async (parent) => {
@@ -498,7 +501,7 @@ const getHandler = (event, context) => {
   //   })
   //   .then(({ port }) => {
   //     console.log(`🚀  Server is running!
-  //   🔉  Listening on port ${port}`);
+  //     🔉  Listening on port ${port}`);
   //   });
 
   const graphqlHandler = server.createHandler();
