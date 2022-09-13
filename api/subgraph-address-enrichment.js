@@ -15,9 +15,9 @@ const typeDefs = gql`
       import: ["@key", "@shareable"]
     )
 
-  type Address @key(fields: "id") {
+  type Location @key(fields: "streetAddress") {
     # full and valid street address
-    id: String!
+    streetAddress: String!
     latitude: Float
     longitude: Float
     neighbourhood: String
@@ -29,10 +29,12 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-  Address: {
-    __resolveReference: async ({ id }) => {
+  Location: {
+    __resolveReference: async ({ streetAddress }) => {
       return await fetch(
-        `https://positionstack.com/geo_api.php?query=${encodeURI(id)}`
+        `https://positionstack.com/geo_api.php?query=${encodeURI(
+          streetAddress
+        )}`
       )
         .then(async (res) => {
           if (res.ok) {

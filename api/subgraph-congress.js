@@ -330,7 +330,7 @@ const typeDefs = gql`
     missedVotes: Int
     totalPresent: Int
     ocdId: ID
-    office: Address
+    office: Location
     phone: String
     fax: String
     state: String
@@ -344,9 +344,9 @@ const typeDefs = gql`
     idealPoint: Float
   }
 
-  type Address @key(fields: "id") {
+  type Location @key(fields: "streetAddress") {
     # ID here is a full street address that we could use to look up metadata
-    id: String!
+    streetAddress: String!
   }
 
   type Congress {
@@ -357,22 +357,24 @@ const typeDefs = gql`
     members: [CongressMember]
   }
 
+    input CongressInput {
+      """
+      Specifies which session of Congress, e.g. 117
+      """
+      congress: Int = 117
+      """
+      Specifies which chamber of Congress, HOUSE or SENATE
+      """
+      chamber: Chamber = SENATE
+    }
+
   """
   A GraphQL interface for congressional data exposed by ProPublica: https://projects.propublica.org/api-docs/congress-api/.
   Congressional data is updated daily.
   Fetch an API Key from them for free: https://www.propublica.org/datastore/api/propublica-congress-api
   """
   type Query {
-    congress(
-      """
-      Specifies which session of Congress, e.g. 116
-      """
-      congress: Int!
-      """
-      Specifies which chamber of Congress, HOUSE or SENATE
-      """
-      chamber: Chamber!
-    ): [Congress]
+    congress(CongressInput): [Congress]
     memberById(id: ID!): MemberDetails
   }
 `;
@@ -434,7 +436,7 @@ const resolvers = {
   CongressMember: {
     // we do this so we can make `id` a @key for federation
     office: ({ office }) => ({
-      id: office
+      streetAddress: office
     })
   },
   MemberVote: {

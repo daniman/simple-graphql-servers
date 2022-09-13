@@ -1,3 +1,9 @@
+/**
+ * - add timezones support
+ * - make congress README
+ * - make congress entry points more approachable
+ */
+
 const { ApolloServer, gql } = require('apollo-server-lambda');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
@@ -15,8 +21,8 @@ const typeDefs = gql`
       import: ["@key", "@shareable"]
     )
 
-  type Address @key(fields: "id") {
-    id: String!
+  type Location @key(fields: "streetAddress") {
+    streetAddress: String!
     latitude: Float @federation__external
     longitude: Float @federation__external
     daylight: Daylight @federation__requires(fields: "latitude longitude")
@@ -39,7 +45,7 @@ const typeDefs = gql`
 `;
 
 const resolvers = {
-  Address: {
+  Location: {
     __resolveReference: async ({ latitude, longitude }) => {
       return await fetch(
         `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}`
