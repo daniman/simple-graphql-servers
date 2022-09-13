@@ -32,9 +32,9 @@ const typeDefs = gql`
 const teammates = [
   {
     id: '1',
-    name: 'Apollo Graph, Inc.',
+    name: 'Nanci Pelosi',
     address: {
-      id: '140 10th Street, San Francisco, CA 94114'
+      id: '455 Dirksen Senate Office Building'
     }
   }
 ];
