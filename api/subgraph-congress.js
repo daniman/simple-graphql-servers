@@ -191,7 +191,7 @@ const typeDefs = gql`
 
   Use id=H001075 to fetch data for Kamala Harris.
   """
-  type MemberDetails implements Member {
+  type MemberGeneralDetails implements Member {
     # copied from Member Interface
     id: ID
     firstName: String
@@ -267,7 +267,7 @@ const typeDefs = gql`
   Metadata for each member of the United States Congress, as it pertains to each session of congress.
   Fetched through https://api.propublica.org/congress/v1/{congress}/{chamber}/members.json.
   """
-  type CongressMember implements Member {
+  type MemberSessionDetails implements Member {
     # copied from Member Interface
     id: ID
     firstName: String
@@ -290,7 +290,7 @@ const typeDefs = gql`
     cspanId: ID
     govtrackId: ID
 
-    # fields extended by CongressMember
+    # fields extended by MemberSessionDetails
     title: String
     shortTitle: String
     apiUri: String
@@ -326,12 +326,22 @@ const typeDefs = gql`
     streetAddress: String
   }
 
-  type Congress {
+  type CongressSession {
     congress: String
     chamber: String
     numResults: Int
     offset: Int
-    members: [CongressMember]
+    members: [MemberSessionDetails]
+    member(
+      """
+      Congress member ID as assigned by Propublica. You can find these IDs by querying the whole list of congress members
+      """
+      id: ID
+      """
+      First and last name, separated by a space
+      """
+      firstAndLastName: String
+    ): MemberSessionDetails
   }
 
   """
@@ -348,8 +358,8 @@ const typeDefs = gql`
       Specifies which chamber of Congress, HOUSE or SENATE
       """
       chamber: Chamber = SENATE
-    ): [Congress]
-    member(id: ID!): MemberDetails
+    ): [CongressSession]
+    member(id: ID!): MemberGeneralDetails
   }
 `;
 
@@ -407,7 +417,38 @@ const resolvers = {
         .catch((err) => new Error(err));
     }
   },
-  CongressMember: {
+  CongressSession: {
+    member: ({ members }, { id, firstAndLastName }) => {
+      if (!id && !firstAndLastName) {
+        throw new Error(
+          'Must provide either an id or a firstAndLastName input to member'
+        );
+      } else if (!!id && !!firstAndLastName) {
+        throw new Error('Provide either an id or a firstAndLastName, not both');
+      } else if (!!id) {
+        const member = members.find((m) => m.id === id);
+        if (member) {
+          return member;
+        } else {
+          throw new Error(
+            'Did not find any congress members with that id in this congress session'
+          );
+        }
+      } else {
+        const member = members.find(
+          (m) => `${m.firstName} ${m.lastName}` === firstAndLastName
+        );
+        if (member) {
+          return member;
+        } else {
+          throw new Error(
+            'Did not find any congress members with that firstAndLastName in this congress session'
+          );
+        }
+      }
+    }
+  },
+  MemberSessionDetails: {
     // we do this so we can make `id` a @key for federation
     office: ({ office }) =>
       office
@@ -435,7 +476,7 @@ const resolvers = {
         .catch((err) => new Error(err));
     }
   },
-  MemberDetails: {
+  MemberGeneralDetails: {
     votes: async (parent, args) => {
       if (!parent.id)
         throw new Error(
@@ -501,7 +542,7 @@ const getHandler = (event, context) => {
   //   })
   //   .then(({ port }) => {
   //     console.log(`🚀  Server is running!
-  //     🔉  Listening on port ${port}`);
+  //       🔉  Listening on port ${port}`);
   //   });
 
   const graphqlHandler = server.createHandler();
