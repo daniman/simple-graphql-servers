@@ -45,7 +45,7 @@ const getHandler = (event, context) => {
     schema: buildSubgraphSchema({ typeDefs, resolvers })
   });
 
-  exports.handler = server.createHandler();
+  const graphqlHandler = server.createHandler();
   if (!event.requestContext) {
     event.requestContext = context;
   }
