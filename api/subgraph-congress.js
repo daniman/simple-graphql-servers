@@ -349,7 +349,7 @@ const typeDefs = gql`
       """
       chamber: Chamber = SENATE
     ): [Congress]
-    memberById(id: ID!): MemberDetails
+    member(id: ID!): MemberDetails
   }
 `;
 
@@ -384,7 +384,7 @@ const resolvers = {
         })
         .catch((err) => new Error(err));
     },
-    memberById: async (_, args) => {
+    member: async (_, args) => {
       if (!args.id)
         throw new Error(
           'Must include an ID for a member of congress to fetch.'
