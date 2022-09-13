@@ -9,7 +9,7 @@ const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
 const utils = require('../utils');
 
 const typeDefs = gql`
-enum Party {
+  enum Party {
     """
     Democratic Party: https://en.wikipedia.org/wiki/Democratic_Party_(United_States)
     """
@@ -19,7 +19,7 @@ enum Party {
     """
     R
   }
-  
+
   """
   The chambers of the [United States Congress](https://en.wikipedia.org/wiki/United_States_Congress).
   """
@@ -27,7 +27,7 @@ enum Party {
     HOUSE
     SENATE
   }
-  
+
   type ChamberVote {
     congress: Int
     session: Int
@@ -55,7 +55,7 @@ enum Party {
     bill: Bill
     amendment: Amendment
   }
-  
+
   type Amendment {
     number: String
     apiUri: String
@@ -65,7 +65,7 @@ enum Party {
     sponsorParty: Party
     sponsorState: String
   }
-  
+
   type Bill {
     billId: ID
     number: String
@@ -74,7 +74,7 @@ enum Party {
     latestAction: String
     details: BillDetails
   }
-  
+
   type BillDetails {
     billId: ID
     billSlug: String
@@ -119,14 +119,14 @@ enum Party {
     # presidential_statements: [],
     # votes: [Array]
   }
-  
+
   type Nomination {
     nominationId: ID
     number: String
     name: String
     agency: String
   }
-  
+
   type PartyVoteTotal {
     yes: Int
     no: Int
@@ -134,14 +134,14 @@ enum Party {
     notVoting: Int
     majorityPosition: String
   }
-  
+
   type ChamberVoteTotal {
     yes: Int
     no: Int
     present: Int
     notVoting: Int
   }
-  
+
   type ChamberVotePosition {
     memberId: ID
     name: String
@@ -150,7 +150,7 @@ enum Party {
     votePosition: String
     dwNominate: Float
   }
-  
+
   type MemberVote {
     memberId: ID
     chamber: String
@@ -167,7 +167,7 @@ enum Party {
     total: MemberVoteTotal
     position: String
   }
-  
+
   type BillForVote {
     billId: ID
     number: String
@@ -175,14 +175,14 @@ enum Party {
     title: String
     latestAction: String
   }
-  
+
   type MemberVoteTotal {
     yes: Int
     no: Int
     present: Int
     notVoting: Int
   }
-  
+
   """
   Interface to abstract the shared data returned from the congress members list
   and the individual members detail endpoint.
@@ -211,10 +211,10 @@ enum Party {
     # extended
     # totalVotes: Int
   }
-  
+
   """
   Metadata for each member of the United States Congress, provided by ProPublica.
-  Fetched through https://api.propublica.org/congress/v1/members/${MEMBER_ID}.json
+  Fetched through https://api.propublica.org/congress/v1/members/\${MEMBER_ID}.json
   """
   type MemberDetails implements Member {
     # copied from Member Interface
@@ -238,7 +238,7 @@ enum Party {
     googleEntityId: ID
     cspanId: ID
     govtrackId: ID
-  
+
     # fields only available by requesting data from individual member endpoint
     roles: [MemberDetailsRole]
     mostRecentVote: String
@@ -247,10 +247,10 @@ enum Party {
     timesTag: String
     votes(offset: Int = 0): [MemberVote]
   }
-  
+
   """
   Details for each role a member in congress might have, fetched through the member
-  details endpoint: https://api.propublica.org/congress/v1/members/${MEMBER_ID}.json
+  details endpoint: https://api.propublica.org/congress/v1/members/\${MEMBER_ID}.json
   """
   type MemberDetailsRole {
     congress: String
@@ -287,7 +287,7 @@ enum Party {
     # committees: [ [Object], [Object], [Object], [Object], [Object] ],
     # subcommittees: []
   }
-  
+
   """
   Metadata for each member of the United States Congress, as it pertains to each session of congress.
   Fetched through https://api.propublica.org/congress/v1/{congress}/{chamber}/members.json.
@@ -314,7 +314,7 @@ enum Party {
     googleEntityId: ID
     cspanId: ID
     govtrackId: ID
-  
+
     # fields extended by CongressMember
     title: String
     shortTitle: String
@@ -343,7 +343,7 @@ enum Party {
     cookPvi: String
     idealPoint: Float
   }
-  
+
   type Congress {
     congress: String
     chamber: String
@@ -351,7 +351,7 @@ enum Party {
     offset: Int
     members: [CongressMember]
   }
-  
+
   """
   A GraphQL interface for congressional data exposed by ProPublica: https://projects.propublica.org/api-docs/congress-api/.
   Congressional data is updated daily.
@@ -369,7 +369,7 @@ enum Party {
       chamber: Chamber!
     ): [Congress]
     memberById(id: ID!): MemberDetails
-  }  
+  }
 `;
 
 const headers = {
@@ -491,6 +491,12 @@ const resolvers = {
     }
   }
 };
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  plugins: [ApolloServerPluginInlineTrace()]
+});
 
 const getHandler = (event, context) => {
   const server = new ApolloServer({
