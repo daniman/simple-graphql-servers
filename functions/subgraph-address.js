@@ -3,8 +3,6 @@ const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
 const utils = require('../utils');
 
-const testy = (str) => str + 'hello';
-
 const typeDefs = gql`
   extend schema
     @link(
@@ -47,17 +45,7 @@ const server = new ApolloServer({
   schema: buildSubgraphSchema({ typeDefs, resolvers })
 });
 
-// // The `listen` method launches a web server.
-// server.listen({ port: 4001 }).then(({ url }) => {
-//   console.log(`🚀  Server ready at ${url}`);
-// });
-
-export default server.createHandler({
-  path: '/address'
+// The `listen` method launches a web server.
+server.listen({ port: process.env.PORT || 4001 }).then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
 });
-
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};

@@ -52,17 +52,7 @@ const server = new ApolloServer({
   schema: buildSubgraphSchema({ typeDefs, resolvers })
 });
 
-// // The `listen` method launches a web server.
-// server.listen({ port: 4002 }).then(({ url }) => {
-//   console.log(`🚀  Server ready at ${url}`);
-// });
-
-export default server.createHandler({
-  path: '/weather'
+// The `listen` method launches a web server.
+server.listen({ port: process.env.PORT || 4002 }).then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
 });
-
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};

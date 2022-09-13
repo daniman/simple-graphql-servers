@@ -3,7 +3,7 @@
  * lsof -i :3000
  */
 
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer, gql } = require('apollo-server-lamdba');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 
 const typeDefs = gql`
@@ -49,17 +49,7 @@ const server = new ApolloServer({
   schema: buildSubgraphSchema({ typeDefs, resolvers })
 });
 
-// // The `listen` method launches a web server.
-// server.listen({ port: 4000 }).then(({ url }) => {
-//   console.log(`🚀  Server ready at ${url}`);
-// });
-
-export default server.createHandler({
-  path: '/teammates'
+// The `listen` method launches a web server.
+server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
+  console.log(`🚀  Server ready at ${url}`);
 });
-
-export const config = {
-  api: {
-    bodyParser: false
-  }
-};
