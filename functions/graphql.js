@@ -3,7 +3,7 @@
  * lsof -i :3000
  */
 
-const { ApolloServer, gql } = require('apollo-server-lamdba');
+const { ApolloServer, gql } = require('apollo-server-lambda');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 
 const typeDefs = gql`

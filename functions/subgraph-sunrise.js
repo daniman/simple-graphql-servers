@@ -1,4 +1,4 @@
-const { ApolloServer, gql } = require('apollo-server-lamdba');
+const { ApolloServer, gql } = require('apollo-server-lambda');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
 const utils = require('../utils');
