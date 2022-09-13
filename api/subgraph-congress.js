@@ -487,10 +487,10 @@ const getHandler = (event, context) => {
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
     plugins: [
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-      ApolloServerPluginInlineTrace()
-      // ApolloServerPluginUsageReporting({
-      //   // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
-      // })
+      ApolloServerPluginInlineTrace(),
+      ApolloServerPluginUsageReporting({
+        // endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+      })
     ]
   });
 
