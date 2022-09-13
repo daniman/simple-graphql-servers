@@ -1,5 +1,8 @@
 const { ApolloServer, gql } = require('apollo-server-lambda');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
+const {
+  ApolloServerPluginLandingPageLocalDefault
+} = require('apollo-server-core');
 
 const typeDefs = gql`
   extend schema
@@ -42,7 +45,8 @@ const resolvers = {
 
 const getHandler = (event, context) => {
   const server = new ApolloServer({
-    schema: buildSubgraphSchema({ typeDefs, resolvers })
+    schema: buildSubgraphSchema({ typeDefs, resolvers }),
+    plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })]
   });
 
   const graphqlHandler = server.createHandler();
