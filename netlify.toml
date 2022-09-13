@@ -1,4 +1,4 @@
 [build]
-  command = "yarn"
+  command = "npm install"
   functions = "functions"
   publish = "static"

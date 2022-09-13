@@ -45,7 +45,9 @@ const server = new ApolloServer({
   schema: buildSubgraphSchema({ typeDefs, resolvers })
 });
 
+exports.handler = server.createHandler();
+
 // The `listen` method launches a web server.
-server.listen({ port: process.env.PORT || 4001 }).then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
-});
+// server.listen({ port: process.env.PORT || 4001 }).then(({ url }) => {
+//   console.log(`🚀  Server ready at ${url}`);
+// });
