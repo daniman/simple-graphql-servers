@@ -32,7 +32,7 @@ const typeDefs = gql`
 const teammates = [
   {
     id: '1',
-    name: 'Danielle Man',
+    name: 'Apollo Graph, Inc.',
     address: {
       id: '140 10th Street, San Francisco, CA 94114'
     }
@@ -49,7 +49,17 @@ const server = new ApolloServer({
   schema: buildSubgraphSchema({ typeDefs, resolvers })
 });
 
-// The `listen` method launches a web server.
-server.listen({ port: 4000 }).then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
+// // The `listen` method launches a web server.
+// server.listen({ port: 4000 }).then(({ url }) => {
+//   console.log(`🚀  Server ready at ${url}`);
+// });
+
+export default server.createHandler({
+  path: '/teammates'
 });
+
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};

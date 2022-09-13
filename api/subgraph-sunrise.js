@@ -58,7 +58,17 @@ const server = new ApolloServer({
   schema: buildSubgraphSchema({ typeDefs, resolvers })
 });
 
-// The `listen` method launches a web server.
-server.listen({ port: 4003 }).then(({ url }) => {
-  console.log(`🚀  Server ready at ${url}`);
+// // The `listen` method launches a web server.
+// server.listen({ port: 4003 }).then(({ url }) => {
+//   console.log(`🚀  Server ready at ${url}`);
+// });
+
+export default server.createHandler({
+  path: '/teammates'
 });
+
+export const config = {
+  api: {
+    bodyParser: false
+  }
+};
