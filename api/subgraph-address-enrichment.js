@@ -48,6 +48,9 @@ const resolvers = {
 
 const getHandler = (event, context) => {
   const server = new ApolloServer({
+    apollo: {
+      graphRef: 'simple-subgraphs@address-enrichment'
+    },
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
     plugins: [
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),

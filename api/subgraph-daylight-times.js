@@ -61,6 +61,9 @@ const resolvers = {
 
 const getHandler = (event, context) => {
   const server = new ApolloServer({
+    apollo: {
+      graphRef: 'simple-subgraphs@daylight-times'
+    },
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
     plugins: [
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),

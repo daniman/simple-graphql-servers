@@ -47,7 +47,9 @@ const resolvers = {
 
 const getHandler = (event, context) => {
   const server = new ApolloServer({
-    graphRef: 'simple-subgraphs@teammates',
+    apollo: {
+      graphRef: 'simple-subgraphs@teammates'
+    },
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
     plugins: [
       ApolloServerPluginLandingPageLocalDefault({ embed: true }),
