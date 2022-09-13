@@ -330,7 +330,7 @@ const typeDefs = gql`
     missedVotes: Int
     totalPresent: Int
     ocdId: ID
-    office: String
+    office: Address
     phone: String
     fax: String
     state: String
@@ -342,6 +342,11 @@ const typeDefs = gql`
     votesAgainstPartyPct: Float
     cookPvi: String
     idealPoint: Float
+  }
+
+  type Address @key(fields: "id") {
+    # ID here is a full street address that we could use to look up metadata
+    id: String!
   }
 
   type Congress {
@@ -381,7 +386,7 @@ const resolvers = {
   Query: {
     congress: async (_, args) => {
       if (!args.congress)
-        throw new Error('Congress session must be specified, eg. 116');
+        throw new Error('Congress session must be specified, eg. 117');
       if (!args.chamber)
         throw new Error('Congress chamber must be specified, eg. SENATE');
 
@@ -425,6 +430,12 @@ const resolvers = {
         })
         .catch((err) => new Error(err));
     }
+  },
+  CongressMember: {
+    // we do this so we can make `id` a @key for federation
+    office: ({ office }) => ({
+      id: office
+    })
   },
   MemberVote: {
     vote: async (parent) => {
@@ -491,12 +502,6 @@ const resolvers = {
     }
   }
 };
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginInlineTrace()]
-});
 
 const getHandler = (event, context) => {
   const server = new ApolloServer({
