@@ -4,6 +4,8 @@ const fetch = require('node-fetch');
 const {
   ApolloServerPluginLandingPageLocalDefault
 } = require('apollo-server-core');
+const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
+const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
 const utils = require('../utils');
 
 const typeDefs = gql`
@@ -47,7 +49,13 @@ const resolvers = {
 const getHandler = (event, context) => {
   const server = new ApolloServer({
     schema: buildSubgraphSchema({ typeDefs, resolvers }),
-    plugins: [ApolloServerPluginLandingPageLocalDefault({ embed: true })]
+    plugins: [
+      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+      ApolloServerPluginInlineTrace(),
+      ApolloServerPluginUsageReporting({
+        endpointUrl: 'https://usage-reporting.api.staging.c0.gql.zone'
+      })
+    ]
   });
 
   const graphqlHandler = server.createHandler();
