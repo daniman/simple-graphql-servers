@@ -1,4 +1,7 @@
-const { ApolloServer, gql } = require('apollo-server-lambda');
+const { ApolloServer, gql } =
+  process.env.NODE_ENV === 'production'
+    ? require('apollo-server-lambda')
+    : require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
 const {
@@ -30,7 +33,8 @@ const typeDefs = gql`
 
 const resolvers = {
   Location: {
-    __resolveReference: async ({ streetAddress }) => {
+    __resolveReference: async ({ streetAddress }, context) => {
+      // console.log(context);
       return await fetch(
         `https://positionstack.com/geo_api.php?query=${encodeURI(
           streetAddress
@@ -49,24 +53,36 @@ const resolvers = {
   }
 };
 
-const getHandler = (event, context) => {
-  const server = new ApolloServer({
-    apollo: {
-      graphRef: 'simple-servers@address-enrichment'
-    },
-    schema: buildSubgraphSchema({ typeDefs, resolvers }),
-    plugins: [
-      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-      ApolloServerPluginInlineTrace(),
-      ApolloServerPluginUsageReporting()
-    ]
-  });
+const server = new ApolloServer({
+  apollo: {
+    graphRef: 'simple-servers@address-enrichment'
+  },
+  schema: buildSubgraphSchema({ typeDefs, resolvers }),
+  plugins: [
+    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ApolloServerPluginInlineTrace(),
+    ...(process.env.NODE_ENV === 'production'
+      ? [ApolloServerPluginUsageReporting()]
+      : [])
+  ]
+});
 
-  const graphqlHandler = server.createHandler();
-  if (!event.requestContext) {
-    event.requestContext = context;
-  }
-  return graphqlHandler(event, context);
-};
+if (process.env.NODE_ENV === 'production') {
+  const getHandler = (event, context) => {
+    const graphqlHandler = server.createHandler();
+    if (!event.requestContext) {
+      event.requestContext = context;
+    }
+    return graphqlHandler(event, context);
+  };
 
-exports.handler = getHandler;
+  exports.handler = getHandler;
+} else {
+  server
+    .listen({
+      port: process.env.PORT || 4001
+    })
+    .then(({ url }) => {
+      console.log(`🚀  Server is running on ${url}`);
+    });
+}

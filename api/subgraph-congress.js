@@ -4,7 +4,10 @@
  * and add it to your environment variables as PROPUBLICA_KEY
  */
 
-const { ApolloServer, gql } = require('apollo-server-lambda');
+const { ApolloServer, gql } =
+  process.env.NODE_ENV === 'production'
+    ? require('apollo-server-lambda')
+    : require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
 const fetch = require('node-fetch');
 const {
@@ -370,7 +373,8 @@ const headers = {
 
 const resolvers = {
   Query: {
-    congress: async (_, { session, chamber }) => {
+    congress: async (_, { session, chamber }, context) => {
+      // console.log(context);
       if (!session)
         throw new Error('Congress session must be specified, eg. 117');
       if (!chamber)
@@ -521,33 +525,39 @@ const resolvers = {
   }
 };
 
-const getHandler = (event, context) => {
-  const server = new ApolloServer({
-    apollo: {
-      graphRef: 'simple-servers@congress'
-    },
-    schema: buildSubgraphSchema({ typeDefs, resolvers }),
-    plugins: [
-      ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-      ApolloServerPluginInlineTrace(),
-      ApolloServerPluginUsageReporting()
-    ]
-  });
+const server = new ApolloServer({
+  apollo: {
+    graphRef: 'simple-servers@congress'
+  },
+  schema: buildSubgraphSchema({ typeDefs, resolvers }),
+  plugins: [
+    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+    ApolloServerPluginInlineTrace(),
+    ...(process.env.NODE_ENV === 'production'
+      ? [ApolloServerPluginUsageReporting()]
+      : [])
+  ],
+  context: () => ({
+    delayIntentionally: false
+  })
+});
 
-  // server
-  //   .listen({
-  //     port: process.env.PORT || 4000
-  //   })
-  //   .then(({ port }) => {
-  //     console.log(`🚀  Server is running!
-  //       🔉  Listening on port ${port}`);
-  //   });
+if (process.env.NODE_ENV === 'production') {
+  const getHandler = (event, context) => {
+    const graphqlHandler = server.createHandler();
+    if (!event.requestContext) {
+      event.requestContext = context;
+    }
+    return graphqlHandler(event, context);
+  };
 
-  const graphqlHandler = server.createHandler();
-  if (!event.requestContext) {
-    event.requestContext = context;
-  }
-  return graphqlHandler(event, context);
-};
-
-exports.handler = getHandler;
+  exports.handler = getHandler;
+} else {
+  server
+    .listen({
+      port: process.env.PORT || 4000
+    })
+    .then(({ url }) => {
+      console.log(`🚀  Server is running on ${url}`);
+    });
+}
