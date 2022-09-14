@@ -326,7 +326,7 @@ const typeDefs = gql`
     """
     A street addres that can be recognized by mapping engines.
     """
-    streetAddress: String
+    streetAddress: String!
   }
 
   type CongressSession {
