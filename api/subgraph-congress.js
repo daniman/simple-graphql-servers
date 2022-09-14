@@ -526,6 +526,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
+  introspection: true,
   apollo: {
     graphRef: 'simple-servers@congress'
   },

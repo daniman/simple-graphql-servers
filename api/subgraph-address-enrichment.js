@@ -54,6 +54,7 @@ const resolvers = {
 };
 
 const server = new ApolloServer({
+  introspection: true,
   apollo: {
     graphRef: 'simple-servers@address-enrichment'
   },
@@ -67,17 +68,17 @@ const server = new ApolloServer({
   ]
 });
 
-if (process.env.NODE_ENV === 'production') {
-  const getHandler = (event, context) => {
-    const graphqlHandler = server.createHandler();
-    if (!event.requestContext) {
-      event.requestContext = context;
-    }
-    return graphqlHandler(event, context);
-  };
+const getHandler = (event, context) => {
+  const graphqlHandler = server.createHandler();
+  if (!event.requestContext) {
+    event.requestContext = context;
+  }
+  return graphqlHandler(event, context);
+};
 
-  exports.handler = getHandler;
-} else {
+exports.handler = getHandler;
+
+if (process.env.NODE_ENV !== 'production') {
   server
     .listen({
       port: process.env.PORT || 4001
