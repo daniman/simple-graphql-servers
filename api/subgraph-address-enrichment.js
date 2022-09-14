@@ -19,7 +19,6 @@ const typeDefs = gql`
     )
 
   type Location @key(fields: "streetAddress") {
-    # full and valid street address
     streetAddress: String!
     latitude: Float
     longitude: Float
