@@ -87,7 +87,6 @@ const server = new ApolloServer({
       'https://simple-graphql-servers.netlify.app/.netlify/functions/get-artificial-delay'
     )
       .then(async (res) => {
-        console.log(res);
         if (res.ok) {
           const data = await res.json();
           return data;
