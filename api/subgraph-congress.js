@@ -374,7 +374,6 @@ const headers = {
 const resolvers = {
   Query: {
     congress: async (_, { session, chamber }, context) => {
-      // console.log(context);
       if (!session)
         throw new Error('Congress session must be specified, eg. 117');
       if (!chamber)
@@ -538,9 +537,20 @@ const server = new ApolloServer({
       ? [ApolloServerPluginUsageReporting()]
       : [])
   ],
-  context: () => ({
-    delayIntentionally: false
-  })
+  context: async () => {
+    return await fetch(
+      'https://simple-graphql-servers.netlify.app/.netlify/functions/get-artificial-delay'
+    )
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          return data;
+        } else {
+          throw new Error('Error fetching artificial delay variable');
+        }
+      })
+      .catch((err) => new Error(err));
+  }
 });
 
 const getHandler = (event, context) => {

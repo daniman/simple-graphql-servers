@@ -44,6 +44,7 @@ const typeDefs = gql`
 const resolvers = {
   Location: {
     __resolveReference: async ({ latitude, longitude }) => {
+      await timeout(context.artificialDelay * 2);
       return await fetch(
         `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}`
       )
@@ -74,7 +75,21 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ]
+  ],
+  context: async () => {
+    return await fetch(
+      'https://simple-graphql-servers.netlify.app/.netlify/functions/get-artificial-delay'
+    )
+      .then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          return data;
+        } else {
+          throw new Error('Error fetching artificial delay variable');
+        }
+      })
+      .catch((err) => new Error(err));
+  }
 });
 
 const getHandler = (event, context) => {
