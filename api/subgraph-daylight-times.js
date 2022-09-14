@@ -18,26 +18,29 @@ const typeDefs = gql`
       import: ["@key", "@shareable"]
     )
 
+  """
+  Sunrise data from https://sunrise-sunset.org/api
+  All times shown in UTC
+  """
   type Location @key(fields: "streetAddress") {
     streetAddress: String!
     latitude: Float @federation__external
     longitude: Float @federation__external
-    daylight: Daylight @federation__requires(fields: "latitude longitude")
-  }
-
-  # Data from https://sunrise-sunset.org/api
-  # All times shown in UTC
-  type Daylight {
-    sunrise: String
-    sunset: String
-    solarNoon: String
-    dayLength: String
+    sunrise: String @federation__requires(fields: "latitude longitude")
+    sunset: String @federation__requires(fields: "latitude longitude")
+    solarNoon: String @federation__requires(fields: "latitude longitude")
+    dayLength: String @federation__requires(fields: "latitude longitude")
     civilTwilightBegin: String
-    civilTwilightEnd: String
+      @federation__requires(fields: "latitude longitude")
+    civilTwilightEnd: String @federation__requires(fields: "latitude longitude")
     nauticalTwilightBegin: String
+      @federation__requires(fields: "latitude longitude")
     nauticalTwilightEnd: String
+      @federation__requires(fields: "latitude longitude")
     astronomicalTwilightBegin: String
+      @federation__requires(fields: "latitude longitude")
     astronomicalTwilightEnd: String
+      @federation__requires(fields: "latitude longitude")
   }
 `;
 
