@@ -54,9 +54,7 @@ const resolvers = {
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return {
-              daylight: utils.snakeToCamel(response.results)
-            };
+            return utils.snakeToCamel(response.results);
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
