@@ -43,8 +43,8 @@ const typeDefs = gql`
 
 const resolvers = {
   Location: {
-    __resolveReference: async ({ latitude, longitude }) => {
-      await timeout(context.artificialDelay * 2);
+    __resolveReference: async ({ latitude, longitude }, context) => {
+      await utils.awaitTimeout(context.artificialDelay);
       return await fetch(
         `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}`
       )

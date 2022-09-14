@@ -34,7 +34,7 @@ const typeDefs = gql`
 const resolvers = {
   Location: {
     __resolveReference: async ({ streetAddress }, context) => {
-      await timeout(context.artificialDelay);
+      await utils.awaitTimeout(context.artificialDelay);
       return await fetch(
         `https://positionstack.com/geo_api.php?query=${encodeURI(
           streetAddress

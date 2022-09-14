@@ -17,4 +17,8 @@ const snakeToCamel = (object) => {
   return newObj;
 };
 
+const awaitTimeout = (delay) =>
+  new Promise((resolve) => setTimeout(resolve, delay));
+
+exports.awaitTimeout = awaitTimeout;
 exports.snakeToCamel = snakeToCamel;
