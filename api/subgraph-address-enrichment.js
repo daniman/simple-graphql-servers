@@ -42,7 +42,10 @@ const resolvers = {
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return utils.snakeToCamel(response.data[0]);
+            return {
+              streetAddress,
+              ...utils.snakeToCamel(response.data[0])
+            };
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
@@ -55,7 +58,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: 'simple-servers@address-enrichment'
+    graphRef: `${process.env.APOLLO_GRAPH_ID}@address-enrichment`
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [

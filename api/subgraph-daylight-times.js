@@ -54,7 +54,11 @@ const resolvers = {
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return utils.snakeToCamel(response.results);
+            return {
+              latitude,
+              longitude,
+              ...utils.snakeToCamel(response.results)
+            };
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
@@ -67,7 +71,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: 'simple-servers@daylight-times'
+    graphRef: `${process.env.APOLLO_GRAPH_ID}@daylight-times`
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [

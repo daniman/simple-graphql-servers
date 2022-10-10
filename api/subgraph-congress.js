@@ -527,7 +527,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: 'simple-servers@congress'
+    graphRef: `${process.env.APOLLO_GRAPH_ID}@congress`
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [

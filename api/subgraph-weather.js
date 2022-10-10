@@ -48,6 +48,8 @@ const resolvers = {
           if (res.ok) {
             const response = await res.json();
             return {
+              latitude,
+              longitude,
               weather: response.weather[0]
                 ? response.weather[0].description
                 : undefined,
@@ -72,7 +74,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: 'simple-servers@weather'
+    graphRef: `${process.env.APOLLO_GRAPH_ID}@weather`
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [
