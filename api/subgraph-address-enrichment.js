@@ -58,7 +58,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: `${process.env.APOLLO_GRAPH_ID}@address-enrichment`
+    graphRef: 'Congress-8vqphc@address-enrichment'
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [

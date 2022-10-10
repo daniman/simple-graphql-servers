@@ -71,7 +71,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: `${process.env.APOLLO_GRAPH_ID}@daylight-times`
+    graphRef: 'Congress-8vqphc@daylight-times'
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [

@@ -74,7 +74,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: `${process.env.APOLLO_GRAPH_ID}@weather`
+    graphRef: 'Congress-8vqphc@weather'
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [
