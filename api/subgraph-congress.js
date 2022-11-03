@@ -308,7 +308,7 @@ const typeDefs = gql`
     missedVotes: Int
     totalPresent: Int
     ocdId: ID
-    office: Location
+    office: String
     phone: String
     fax: String
     state: String
@@ -320,13 +320,6 @@ const typeDefs = gql`
     votesAgainstPartyPct: Float
     cookPvi: String
     idealPoint: Float
-  }
-
-  type Location @key(fields: "streetAddress") {
-    """
-    A street addres that can be recognized by mapping engines.
-    """
-    streetAddress: String!
   }
 
   type CongressSession {
@@ -448,15 +441,6 @@ const resolvers = {
         }
       }
     }
-  },
-  MemberSessionDetails: {
-    // we do this so we can make `id` a @key for federation
-    office: ({ office }) =>
-      office
-        ? {
-            streetAddress: office
-          }
-        : null
   },
   MemberVote: {
     vote: async (parent) => {

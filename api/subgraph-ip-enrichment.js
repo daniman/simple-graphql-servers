@@ -19,57 +19,36 @@ const typeDefs = gql`
     )
 
   type Query {
-    address(streetAddress: String!): Location
-  }
-
-  type MemberSessionDetails @key(fields: "office") {
-    office: String!
-    location: Location
+    ipLocation(ip: String!): Location
   }
 
   type Location @key(fields: "latitude longitude") {
     latitude: Float
     longitude: Float
-    neighbourhood: String
-    county: String
-    continent: String
-    country: String @shareable
+    hostname: String
+    city: String
+    postal: String
+    timezone: String
     region: String @shareable
+    country: String @shareable
   }
 `;
 
 const resolvers = {
   Query: {
-    address: async (_, { streetAddress }) => {
+    ipLocation: async (_, { ip }) => {
       return await fetch(
-        `https://positionstack.com/geo_api.php?query=${encodeURI(
-          streetAddress
-        )}`
+        `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`
       )
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return utils.snakeToCamel(response.data[0]);
-          } else {
-            throw new Error('Error fetching data. Did you include an API Key?');
-          }
-        })
-        .catch((err) => new Error(err));
-    }
-  },
-  MemberSessionDetails: {
-    __resolveReference: async ({ office }, context) => {
-      await utils.awaitTimeout(context.artificialDelay);
-      return await fetch(
-        `https://positionstack.com/geo_api.php?query=${encodeURI(office)}`
-      )
-        .then(async (res) => {
-          if (res.ok) {
-            const response = await res.json();
-            return {
-              office,
-              location: utils.snakeToCamel(response.data[0])
-            };
+            const [latitude, longitude] = response.loc.split(',');
+            return utils.snakeToCamel({
+              latitude,
+              longitude,
+              ...response
+            });
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
@@ -121,7 +100,7 @@ exports.handler = getHandler;
 if (process.env.NODE_ENV !== 'production') {
   server
     .listen({
-      port: process.env.PORT || 4001
+      port: process.env.PORT || 4004
     })
     .then(({ url }) => {
       console.log(`🚀  Server is running on ${url}`);

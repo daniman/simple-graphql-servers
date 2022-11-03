@@ -21,18 +21,17 @@ const typeDefs = gql`
   """
   Weather data from https://openweathermap.org/current
   """
-  type Location @key(fields: "streetAddress") {
-    streetAddress: String!
-    latitude: Float @federation__external
-    longitude: Float @federation__external
-    weather: String @federation__requires(fields: "latitude longitude")
-    temperature: Float @federation__requires(fields: "latitude longitude")
-    feelsLike: Float @federation__requires(fields: "latitude longitude")
-    tempMin: Float @federation__requires(fields: "latitude longitude")
-    tempMax: Float @federation__requires(fields: "latitude longitude")
-    pressure: Float @federation__requires(fields: "latitude longitude")
-    humidity: Float @federation__requires(fields: "latitude longitude")
-    windSpeed: Float @federation__requires(fields: "latitude longitude")
+  type Location @key(fields: "latitude longitude") {
+    latitude: Float
+    longitude: Float
+    weather: String
+    temperature: Float
+    feelsLike: Float
+    tempMin: Float
+    tempMax: Float
+    pressure: Float
+    humidity: Float
+    windSpeed: Float
   }
 `;
 
@@ -41,7 +40,6 @@ const resolvers = {
     __resolveReference: async ({ latitude, longitude }, context) => {
       await utils.awaitTimeout(context.artificialDelay);
       return await fetch(
-        // `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}`
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=f07ae920c19fb5d89d65c0ca5d235b1f`
       )
         .then(async (res) => {

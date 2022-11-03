@@ -22,25 +22,20 @@ const typeDefs = gql`
   Sunrise data from https://sunrise-sunset.org/api
   All times shown in UTC
   """
-  type Location @key(fields: "streetAddress") {
+  type Location @key(fields: "latitude longitude") {
     streetAddress: String!
-    latitude: Float @federation__external
-    longitude: Float @federation__external
-    sunrise: String @federation__requires(fields: "latitude longitude")
-    sunset: String @federation__requires(fields: "latitude longitude")
-    solarNoon: String @federation__requires(fields: "latitude longitude")
-    dayLength: String @federation__requires(fields: "latitude longitude")
+    latitude: Float
+    longitude: Float
+    sunrise: String
+    sunset: String
+    solarNoon: String
+    dayLength: String
     civilTwilightBegin: String
-      @federation__requires(fields: "latitude longitude")
-    civilTwilightEnd: String @federation__requires(fields: "latitude longitude")
+    civilTwilightEnd: String
     nauticalTwilightBegin: String
-      @federation__requires(fields: "latitude longitude")
     nauticalTwilightEnd: String
-      @federation__requires(fields: "latitude longitude")
     astronomicalTwilightBegin: String
-      @federation__requires(fields: "latitude longitude")
     astronomicalTwilightEnd: String
-      @federation__requires(fields: "latitude longitude")
   }
 `;
 
