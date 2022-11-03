@@ -61,7 +61,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: 'simple-servers2@address-enrichment'
+    graphRef: 'simple-servers2@ip-enrichment'
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [
