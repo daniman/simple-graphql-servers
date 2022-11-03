@@ -9,11 +9,18 @@
       </li></a
     >
     <a
+      href="https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-ip-enrichment"
+      ><li>
+        ip-enrichment
+        <span style="font-size: 0.8rem">(<b>base graph</b>)</span>
+      </li></a
+    >
+    <a
       href="https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment"
       ><li>
         address-enrichment
         <span style="font-size: 0.8rem"
-          >(federate with <b>congress</b> subgraph)</span
+          >(federate with <b>congress</b> to get lat/long)</span
         >
       </li></a
     >
@@ -22,7 +29,8 @@
       ><li>
         weather
         <span style="font-size: 0.8rem"
-          >(federate with <b>congress</b> and <b>address-enrichment</b>)</span
+          >(federate with <b>address-enrichment</b> or <b>ip-enrichment</b> to
+          use lat/log to extend)</span
         >
       </li></a
     >
@@ -31,7 +39,8 @@
       ><li>
         daylight-times
         <span style="font-size: 0.8rem"
-          >(federate with <b>congress</b> and <b>address-enrichment</b>)</span
+          >(federate with <b>address-enrichment</b> or <b>ip-enrichment</b> to
+          use lat/log to extend)</span
         >
       </li></a
     >
