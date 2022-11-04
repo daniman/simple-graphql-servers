@@ -1,11 +1,13 @@
 #!/bin/bash
 
-rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-congress | rover graph publish simple-servers@congress --schema -
-rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment | rover graph publish simple-servers@address-enrichment --schema -
-rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight-times | rover graph publish simple-servers@daylight-times --schema -
-rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-weather | rover graph publish simple-servers@weather --schema -
+rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-congress | rover graph publish simple-servers2@congress --schema - --profile prod-gh 
+rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment | rover graph publish simple-servers2@address-enrichment --schema - --profile prod-gh 
+rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-ip-enrichment | rover graph publish simple-servers2@ip-enrichment --schema - --profile prod-gh 
+rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight-times | rover graph publish simple-servers2@daylight-times --schema - --profile prod-gh 
+rover graph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-weather | rover graph publish simple-servers2@weather --schema - --profile prod-gh 
 
-rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-congress | rover subgraph publish simple-servers@supergraph --name congress --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-congress
-rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment | rover subgraph publish simple-servers@supergraph --name address-enrichment --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment
-rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight-times | rover subgraph publish simple-servers@supergraph --name daylight-times --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight-times  
-rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-weather | rover subgraph publish simple-servers@supergraph --name weather --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-weather  
+rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-congress | rover subgraph publish congress2@main --name congress --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-congress --profile prod-gh 
+rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment | rover subgraph publish congress2@main --name address-enrichment --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment --profile prod-gh 
+rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-ip-enrichment | rover subgraph publish congress2@main --name ip-enrichment --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment --profile prod-gh 
+rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight-times | rover subgraph publish congress2@main --name daylight-times --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight-times --profile prod-gh 
+rover subgraph introspect https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-weather | rover subgraph publish congress2@main --name weather --schema - --routing-url https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-weather --profile prod-gh 
