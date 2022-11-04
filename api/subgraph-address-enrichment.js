@@ -42,9 +42,9 @@ const resolvers = {
   Query: {
     address: async (_, { streetAddress }) => {
       return await fetch(
-        `https://positionstack.com/geo_api.php?query=${encodeURI(
-          streetAddress
-        )}`
+        `http://api.positionstack.com/v1/forward?access_key=${
+          process.env.POSITION_STACK_KEY
+        }&query=${encodeURI(streetAddress)}`
       )
         .then(async (res) => {
           if (res.ok) {
@@ -61,7 +61,9 @@ const resolvers = {
     __resolveReference: async ({ office }, context) => {
       await utils.awaitTimeout(context.artificialDelay);
       return await fetch(
-        `https://positionstack.com/geo_api.php?query=${encodeURI(office)}`
+        `http://api.positionstack.com/v1/forward?access_key=${
+          process.env.POSITION_STACK_KEY
+        }&query=${encodeURI(office)}`
       )
         .then(async (res) => {
           if (res.ok) {
@@ -70,6 +72,22 @@ const resolvers = {
               office,
               location: utils.snakeToCamel(response.data[0])
             };
+          } else {
+            throw new Error('Error fetching data. Did you include an API Key?');
+          }
+        })
+        .catch((err) => new Error(err));
+    }
+  },
+  Location: {
+    __resolveReference: async ({ latitude, longitude }, context) => {
+      return await fetch(
+        `http://api.positionstack.com/v1/reverse?access_key=${process.env.POSITION_STACK_KEY}&query=${latitude},${longitude}`
+      )
+        .then(async (res) => {
+          if (res.ok) {
+            const response = await res.json();
+            return utils.snakeToCamel(response.data[0]);
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
