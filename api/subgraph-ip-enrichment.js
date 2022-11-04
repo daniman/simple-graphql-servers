@@ -25,12 +25,6 @@ const typeDefs = gql`
   type Location @key(fields: "latitude longitude") {
     latitude: Float
     longitude: Float
-    hostname: String
-    city: String
-    postal: String
-    timezone: String
-    region: String @shareable
-    country: String @shareable
   }
 `;
 
