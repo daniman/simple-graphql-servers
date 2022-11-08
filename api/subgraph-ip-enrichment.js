@@ -20,6 +20,7 @@ const typeDefs = gql`
 
   type Query {
     ipLocation(ip: String!): Location
+    giveError(message: String): String
   }
 
   type Location @key(fields: "latitude longitude") {
@@ -32,6 +33,9 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
+    giveError: (_, { message }) => {
+      throw new Error(message || 'Hello! This is the error you requested.');
+    },
     ipLocation: async (_, { ip }) => {
       return await fetch(
         `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`
