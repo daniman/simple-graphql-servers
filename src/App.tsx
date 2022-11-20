@@ -19,7 +19,7 @@ export const App = () => {
       });
   }, []);
 
-  const { data, loading, error } = useQuery(
+  const { data } = useQuery(
     gql`
       query ($ipAddress: String!) {
         ipLocation(ip: $ipAddress) {
