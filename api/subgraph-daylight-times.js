@@ -23,7 +23,6 @@ const typeDefs = gql`
   All times shown in UTC
   """
   type Location @key(fields: "latitude longitude") {
-    streetAddress: String!
     latitude: Float
     longitude: Float
     sunrise: String

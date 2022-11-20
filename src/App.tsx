@@ -1,5 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
+
+const ProgressiveLoad = ({ value }: { value?: string }) =>
+  value ? (
+    <b>{value}</b>
+  ) : (
+    <span style={{ opacity: 0.8, fontSize: '0.8rem' }}>loading...</span>
+  );
 
 export const App = () => {
   const [ipAddress, setIpAddress] = useState<string>();
@@ -16,15 +23,23 @@ export const App = () => {
     gql`
       query ($ipAddress: String!) {
         ipLocation(ip: $ipAddress) {
-          latitude
-          longitude
+          ... on Location @defer {
+            latitude
+            longitude
+          }
+          ... on Location @defer {
+            neighbourhood
+            county
+          }
           ... on Location @defer {
             weather
             temperature
             tempMax
             tempMin
+            feelsLike
           }
           ... on Location @defer {
+            sunrise
             sunset
           }
         }
@@ -36,20 +51,24 @@ export const App = () => {
     }
   );
 
-  console.log(ipAddress);
-  console.log(data);
-
   return (
     <div
       style={{
-        margin: 40,
-        fontFamily: 'sans-serif'
+        margin: '80px auto',
+        fontFamily: 'sans-serif',
+        maxWidth: 800
       }}
     >
-      <h4>
-        Simple GraphQL servers that run as Netlify functions and be federated
-        with Apollo Federation:
-      </h4>
+      <h3>Simple GraphQL servers that run as lambdas</h3>
+      <p>
+        These are very small GraphQL servers that fetch data from a variety of
+        free APIs. They are each enabled with Apollo Federation and are designed
+        to be combined and build off each other (
+        <a href="https://github.com/daniman/simple-graphql-servers/tree/main/api">
+          code on GitHub
+        </a>
+        ):
+      </p>
       <ul>
         {[
           {
@@ -108,19 +127,58 @@ export const App = () => {
                   fontSize: '0.8rem'
                 }}
               >
+                {' '}
                 {description}
               </span>
             </li>
           </a>
         ))}
       </ul>
-      <p>
-        These are small, light weight GraphQL servers that fetch data from a
-        variety of free APIs and play off of each other.
+      <p style={{ marginTop: 40 }}>
+        You can try out a graph that combines all these schemas here:
       </p>
-      <h4 style={{ marginTop: 40 }}>
-        Example when these servers are combined together:
-      </h4>
+      <ul>
+        <li>
+          <a href="https://studio.apollographql.com/public/congress2/explorer?explorerURLState=N4IgJg9gxgrgtgUwHYBcQC4QEcYIE4CeABMADpJFFQRIDmeCAzoyeZZYnAEb4AUAZgEs8jFAEEkYADIBDUQDkZidEVIgA0kpkAbGUQASMvHkGM1ASlYV2lCPyFQEbG0W3QZKQTSsv2AOgCibyl3T28AATAEfnwfX3ZdTxQYKOd41xpaQWTU618AXzSXAL8gihCoDy8KSOjYsjz4gHcEDwALfCKbQsabErKiCqqIqJi8OPTGGCQTRidelymkOZQu9h6Coo2iHvyQfKA&variant=main">
+            congress graph, enriched with lat/long, weather, and sunrise/sunset
+            times
+          </a>
+        </li>
+      </ul>
+      <p style={{ marginTop: 40 }}>
+        Here's an example UI that queries the combined graph and loads info with
+        @defer:
+      </p>
+      <div
+        style={{
+          outline: '1px solid #ccc',
+          borderRadius: 4,
+          padding: 20
+        }}
+      >
+        <div>
+          Your IP address is <ProgressiveLoad value={ipAddress} />. Your
+          latitude is <ProgressiveLoad value={data?.ipLocation?.latitude} /> and
+          your longitude is{' '}
+          <ProgressiveLoad value={data?.ipLocation?.longitude} />. Approximate
+          neighbourhood:{' '}
+          <ProgressiveLoad value={data?.ipLocation?.neighbourhood} />.
+        </div>
+        <div style={{ marginTop: 8 }}>
+          The weather today is{' '}
+          <ProgressiveLoad value={data?.ipLocation?.weather} /> in{' '}
+          <ProgressiveLoad value={data?.ipLocation?.county} />. The temperature
+          is <ProgressiveLoad value={data?.ipLocation?.temperature} /> (feels
+          like <ProgressiveLoad value={data?.ipLocation?.feelsLike} />) with a
+          high of <ProgressiveLoad value={data?.ipLocation?.tempMax} /> and a
+          low of <ProgressiveLoad value={data?.ipLocation?.tempMin} />.
+        </div>
+        <div style={{ marginTop: 8 }}>
+          Sunrise is at <ProgressiveLoad value={data?.ipLocation?.sunrise} />{' '}
+          and sunset is at <ProgressiveLoad value={data?.ipLocation?.sunset} />.
+        </div>
+        <div>(info is shown in UTC and Kelvin, it's not broken)</div>
+      </div>
     </div>
   );
 };
