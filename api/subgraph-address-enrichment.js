@@ -58,8 +58,7 @@ const resolvers = {
     }
   },
   MemberSessionDetails: {
-    __resolveReference: async ({ office }, context) => {
-      await utils.awaitTimeout(context.artificialDelay);
+    __resolveReference: async ({ office }) => {
       return await fetch(
         `http://api.positionstack.com/v1/forward?access_key=${
           process.env.POSITION_STACK_KEY
@@ -80,7 +79,7 @@ const resolvers = {
     }
   },
   Location: {
-    __resolveReference: async ({ latitude, longitude }, context) => {
+    __resolveReference: async ({ latitude, longitude }) => {
       return await fetch(
         `http://api.positionstack.com/v1/reverse?access_key=${process.env.POSITION_STACK_KEY}&query=${latitude},${longitude}`
       )
@@ -109,21 +108,7 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ],
-  context: async () => {
-    return await fetch(
-      'https://simple-graphql-servers.netlify.app/.netlify/functions/get-artificial-delay'
-    )
-      .then(async (res) => {
-        if (res.ok) {
-          const data = await res.json();
-          return data;
-        } else {
-          throw new Error('Error fetching artificial delay variable');
-        }
-      })
-      .catch((err) => new Error(err));
-  }
+  ]
 });
 
 const getHandler = (event, context) => {
