@@ -9,7 +9,7 @@ const {
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const utils = require('../utils');
+const utils = require('../utils/utils');
 
 const typeDefs = gql`
   extend schema
