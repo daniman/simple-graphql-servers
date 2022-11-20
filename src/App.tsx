@@ -9,7 +9,7 @@ const ProgressiveLoad = ({ value }: { value?: string | number }) =>
   );
 
 const kelvinToFahrenheit = (kelvin?: number) =>
-  kelvin ? 1.8 * (kelvin - 273) + 32 : undefined;
+  kelvin ? `${(1.8 * (kelvin - 273) + 32).toFixed(0)}°` : undefined;
 
 export const App = () => {
   const [ipAddress, setIpAddress] = useState<string>();
@@ -161,10 +161,9 @@ export const App = () => {
       >
         <div>
           Your IP address is <ProgressiveLoad value={ipAddress} />. Your
-          latitude is <ProgressiveLoad value={data?.ipLocation?.latitude} /> and
-          your longitude is{' '}
-          <ProgressiveLoad value={data?.ipLocation?.longitude} />. Approximate
-          neighbourhood:{' '}
+          lat/long is <ProgressiveLoad value={data?.ipLocation?.latitude} />/
+          <ProgressiveLoad value={data?.ipLocation?.longitude} />.
+          Neighbourhood:{' '}
           <ProgressiveLoad value={data?.ipLocation?.neighbourhood} />.
         </div>
         <div style={{ marginTop: 8 }}>
@@ -194,7 +193,9 @@ export const App = () => {
           <ProgressiveLoad
             value={
               data?.ipLocation?.sunrise
-                ? new Date(data?.ipLocation?.sunrise).toLocaleString('en-US')
+                ? new Date(data?.ipLocation?.sunrise).toLocaleTimeString(
+                    'en-US'
+                  )
                 : undefined
             }
           />{' '}
@@ -202,7 +203,7 @@ export const App = () => {
           <ProgressiveLoad
             value={
               data?.ipLocation?.sunset
-                ? new Date(data?.ipLocation?.sunrise).toLocaleString('en-US')
+                ? new Date(data?.ipLocation?.sunset).toLocaleTimeString('en-US')
                 : undefined
             }
           />
