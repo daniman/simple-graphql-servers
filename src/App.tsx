@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 
-const ProgressiveLoad = ({ value }: { value?: string }) =>
+const ProgressiveLoad = ({ value }: { value?: string | number }) =>
   value ? (
     <b>{value}</b>
   ) : (
     <span style={{ opacity: 0.8, fontSize: '0.8rem' }}>loading...</span>
   );
+
+const kelvinToFahrenheit = (kelvin?: number) =>
+  kelvin ? 1.8 * (kelvin - 273) + 32 : undefined;
 
 export const App = () => {
   const [ipAddress, setIpAddress] = useState<string>();
@@ -168,16 +171,43 @@ export const App = () => {
           The weather today is{' '}
           <ProgressiveLoad value={data?.ipLocation?.weather} /> in{' '}
           <ProgressiveLoad value={data?.ipLocation?.county} />. The temperature
-          is <ProgressiveLoad value={data?.ipLocation?.temperature} /> (feels
-          like <ProgressiveLoad value={data?.ipLocation?.feelsLike} />) with a
-          high of <ProgressiveLoad value={data?.ipLocation?.tempMax} /> and a
-          low of <ProgressiveLoad value={data?.ipLocation?.tempMin} />.
+          is{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.temperature)}
+          />{' '}
+          (feels like{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.feelsLike)}
+          />
+          ) with a high of{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.tempMax)}
+          />{' '}
+          and a low of{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.tempMin)}
+          />
+          .
         </div>
         <div style={{ marginTop: 8 }}>
-          Sunrise is at <ProgressiveLoad value={data?.ipLocation?.sunrise} />{' '}
-          and sunset is at <ProgressiveLoad value={data?.ipLocation?.sunset} />.
+          Sunrise is at{' '}
+          <ProgressiveLoad
+            value={
+              data?.ipLocation?.sunrise
+                ? new Date(data?.ipLocation?.sunrise).toLocaleString('en-US')
+                : undefined
+            }
+          />{' '}
+          and sunset is at{' '}
+          <ProgressiveLoad
+            value={
+              data?.ipLocation?.sunset
+                ? new Date(data?.ipLocation?.sunrise).toLocaleString('en-US')
+                : undefined
+            }
+          />
+          .
         </div>
-        <div>(info is shown in UTC and Kelvin, it's not broken)</div>
       </div>
     </div>
   );

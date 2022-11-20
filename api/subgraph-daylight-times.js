@@ -42,7 +42,7 @@ const resolvers = {
   Location: {
     __resolveReference: async ({ latitude, longitude }) => {
       return await fetch(
-        `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}`
+        `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&formatted=0`
       )
         .then(async (res) => {
           if (res.ok) {
