@@ -160,17 +160,24 @@ export const App = () => {
         }}
       >
         <div>
-          Your IP address is <ProgressiveLoad value={ipAddress} />. Your
-          lat/long is <ProgressiveLoad value={data?.ipLocation?.latitude} />/
-          <ProgressiveLoad value={data?.ipLocation?.longitude} />.
-          Neighbourhood:{' '}
-          <ProgressiveLoad value={data?.ipLocation?.neighbourhood} />.
+          💻 Your IP address is <ProgressiveLoad value={ipAddress} />.
         </div>
-        <div style={{ marginTop: 8 }}>
-          The weather today is{' '}
+        <div>
+          🌐 Your lat/long is{' '}
+          <ProgressiveLoad value={data?.ipLocation?.latitude} />/
+          <ProgressiveLoad value={data?.ipLocation?.longitude} />.
+        </div>
+        <div>
+          🏠 Neighbourhood:{' '}
+          <ProgressiveLoad value={data?.ipLocation?.neighbourhood} />
+        </div>
+        <div>
+          ☁️ The weather today is{' '}
           <ProgressiveLoad value={data?.ipLocation?.weather} /> in{' '}
-          <ProgressiveLoad value={data?.ipLocation?.county} />. The temperature
-          is{' '}
+          <ProgressiveLoad value={data?.ipLocation?.county} />.
+        </div>
+        <div>
+          🌡️ The temperature is{' '}
           <ProgressiveLoad
             value={kelvinToFahrenheit(data?.ipLocation?.temperature)}
           />{' '}
@@ -188,8 +195,8 @@ export const App = () => {
           />
           .
         </div>
-        <div style={{ marginTop: 8 }}>
-          Sunrise is at{' '}
+        <div>
+          🌅 Sunrise is at{' '}
           <ProgressiveLoad
             value={
               data?.ipLocation?.sunrise
@@ -198,8 +205,11 @@ export const App = () => {
                   )
                 : undefined
             }
-          />{' '}
-          and sunset is at{' '}
+          />
+          .
+        </div>
+        <div>
+          🌇 Sunset is at{' '}
           <ProgressiveLoad
             value={
               data?.ipLocation?.sunset
