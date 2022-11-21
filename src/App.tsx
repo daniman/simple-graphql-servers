@@ -143,8 +143,7 @@ export const App = () => {
       <ul>
         <li>
           <a href="https://studio.apollographql.com/public/congress2/explorer?explorerURLState=N4IgJg9gxgrgtgUwHYBcQC4QEcYIE4CeABMADpJFFQRIDmeCAzoyeZZYnAEb4AUAZgEs8jFAEEkYADIBDUQDkZidEVIgA0kpkAbGUQASMvHkGM1ASlYV2lCPyFQEbG0W3QZKQTSsv2AOgCibyl3T28AATAEfnwfX3ZdTxQYKOd41xpaQWTU618AXzSXAL8gihCoDy8KSOjYsjz4gHcEDwALfCKbQsabErKiCqqIqJi8OPTGGCQTRidelymkOZQu9h6Coo2iHvyQfKA&variant=main">
-            congress graph, enriched with lat/long, weather, and sunrise/sunset
-            times
+            When does the sun set on Capitol Hill today?
           </a>
         </li>
       </ul>
