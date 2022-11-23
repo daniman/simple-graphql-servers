@@ -42,8 +42,8 @@ We have set the following environment variables
 
 | Variable | Source |
 | :-- | :-- |
-| NODE_ENV | production |
-| APOLLO_KEY | Create a supergraph in [GraphOS Studio]([url](https://studio.apollographql.com)) and make a graph key for schema publishing |
-| IP_INFO_KEY | Make a free account with https://ipinfo.io/ |
-| POSITION_STACK_KEY | Make a free account with https://api.positionstack.com/ |
-| PROPUBLICA_KEY | Request a free API key: https://www.propublica.org/datastore/api/propublica-congress-api |
+| `NODE_ENV` | production |
+| `APOLLO_KEY` | Create a supergraph in [GraphOS Studio]([url](https://studio.apollographql.com)) and make a graph key for schema publishing |
+| `IP_INFO_KEY` | Make a free account with https://ipinfo.io/ |
+| `POSITION_STACK_KEY` | Make a free account with https://api.positionstack.com/ |
+| `PROPUBLICA_KEY` | Request a free API key: https://www.propublica.org/datastore/api/propublica-congress-api |
