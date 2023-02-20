@@ -64,7 +64,7 @@ const resolvers = {
 const server = new ApolloServer({
   introspection: true,
   apollo: {
-    graphRef: 'simple-servers2@daylight-times'
+    graphRef: 'simple-servers2@daylight'
   },
   schema: buildSubgraphSchema({ typeDefs, resolvers }),
   plugins: [
