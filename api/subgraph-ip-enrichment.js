@@ -10,8 +10,11 @@ const {
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
 const utils = require('../utils/utils');
+const { typeDefs: scalarTypeDefs } = require('graphql-scalars');
 
 const typeDefs = gql`
+  ${scalarTypeDefs}
+
   extend schema
     @link(
       url: "https://specs.apollo.dev/federation/v2.0"
@@ -20,7 +23,7 @@ const typeDefs = gql`
 
   type Query {
     ipLocation(ip: String!): Location
-    giveError(message: String): String
+    # giveError(message: String): String
   }
 
   type Location @key(fields: "latitude longitude") {

@@ -22,10 +22,10 @@ const typeDefs = gql`
     address(streetAddress: String!): Location
   }
 
-  type MemberSessionDetails @key(fields: "office") {
-    office: String!
-    location: Location
-  }
+  # type MemberSessionDetails @key(fields: "office") {
+  #   office: String!
+  #   location: Location
+  # }
 
   type Location @key(fields: "latitude longitude") {
     latitude: Float
