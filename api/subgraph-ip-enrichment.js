@@ -81,9 +81,9 @@ const server = new ApolloServer({
      * but in the apollo-server-lambda package we need to key off `event`
      */
     return {
-      delay: req.headers
+      delay: !!req
         ? parseInt(req.headers.delay)
-        : event.headers
+        : !!event
         ? parseInt(event.headers.delay)
         : 0
     };
