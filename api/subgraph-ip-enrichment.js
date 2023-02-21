@@ -3,13 +3,12 @@ const { ApolloServer, gql } =
     ? require('apollo-server-lambda')
     : require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
-const fetch = require('node-fetch');
 const {
   ApolloServerPluginLandingPageLocalDefault
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const utils = require('../utils/utils');
+const { snakeToCamel, delayFetch } = require('../utils/utils');
 const { typeDefs: scalarTypeDefs } = require('graphql-scalars');
 
 const typeDefs = gql`
@@ -39,15 +38,16 @@ const resolvers = {
     giveError: (_, { message }) => {
       throw new Error(message || 'Hello! This is the error you requested.');
     },
-    ipLocation: async (_, { ip }) => {
-      return await fetch(
-        `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`
+    ipLocation: async (_, { ip }, { delay }) => {
+      return await delayFetch(
+        `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`,
+        { delay: delay * 0 }
       )
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
             const [latitude, longitude] = response.loc.split(',');
-            return utils.snakeToCamel({
+            return snakeToCamel({
               latitude,
               longitude,
               ...response
@@ -73,7 +73,10 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ]
+  ],
+  context: async ({ req }) => ({
+    delay: parseInt(req.headers.delay) || 0
+  })
 });
 
 const getHandler = (event, context) => {

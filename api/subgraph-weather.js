@@ -3,13 +3,12 @@ const { ApolloServer, gql } =
     ? require('apollo-server-lambda')
     : require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
-const fetch = require('node-fetch');
 const {
   ApolloServerPluginLandingPageLocalDefault
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const utils = require('../utils/utils');
+const { kelvinToFahrenheit, delayFetch } = require('../utils/utils');
 
 const typeDefs = gql`
   extend schema
@@ -37,9 +36,10 @@ const typeDefs = gql`
 
 const resolvers = {
   Location: {
-    __resolveReference: async ({ latitude, longitude }) => {
-      return await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=f07ae920c19fb5d89d65c0ca5d235b1f`
+    __resolveReference: async ({ latitude, longitude }, { delay }) => {
+      return await delayFetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=f07ae920c19fb5d89d65c0ca5d235b1f`,
+        { delay: delay * 1 }
       )
         .then(async (res) => {
           if (res.ok) {
@@ -50,15 +50,14 @@ const resolvers = {
               weather: response.weather[0]
                 ? response.weather[0].description
                 : undefined,
-              temperature: utils.kelvinToFahrenheit(response.main.temp),
-              feelsLike: utils.kelvinToFahrenheit(response.main.feels_like),
-              tempMin: utils.kelvinToFahrenheit(response.main.temp_min),
-              tempMax: utils.kelvinToFahrenheit(response.main.temp_max),
+              temperature: kelvinToFahrenheit(response.main.temp),
+              feelsLike: kelvinToFahrenheit(response.main.feels_like),
+              tempMin: kelvinToFahrenheit(response.main.temp_min),
+              tempMax: kelvinToFahrenheit(response.main.temp_max),
               pressure: response.main.pressure,
               humidity: response.main.humidity,
               windSpeed: response.wind.speed
             };
-            // return utils.snakeToCamel(response.results);
           } else {
             throw new Error('Error fetching data');
           }
@@ -80,7 +79,10 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ]
+  ],
+  context: async ({ req }) => ({
+    delay: parseInt(req.headers.delay) || 0
+  })
 });
 
 const getHandler = (event, context) => {

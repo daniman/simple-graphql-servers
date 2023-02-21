@@ -9,7 +9,7 @@ const {
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const utils = require('../utils/utils');
+const { delayFetch, snakeToCamel } = require('../utils/utils');
 
 const typeDefs = gql`
   extend schema
@@ -49,7 +49,7 @@ const resolvers = {
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return utils.snakeToCamel(response.data[0]);
+            return snakeToCamel(response.data[0]);
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
@@ -69,7 +69,7 @@ const resolvers = {
             const response = await res.json();
             return {
               office,
-              location: utils.snakeToCamel(response.data[0])
+              location: snakeToCamel(response.data[0])
             };
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
@@ -79,14 +79,15 @@ const resolvers = {
     }
   },
   Location: {
-    __resolveReference: async ({ latitude, longitude }) => {
-      return await fetch(
-        `http://api.positionstack.com/v1/reverse?access_key=${process.env.POSITION_STACK_KEY}&query=${latitude},${longitude}`
+    __resolveReference: async ({ latitude, longitude }, { delay }) => {
+      return await delayFetch(
+        `http://api.positionstack.com/v1/reverse?access_key=${process.env.POSITION_STACK_KEY}&query=${latitude},${longitude}`,
+        { delay: delay * 0 }
       )
         .then(async (res) => {
           if (res.ok) {
             const response = await res.json();
-            return utils.snakeToCamel(response.data[0]);
+            return snakeToCamel(response.data[0]);
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
           }
@@ -108,7 +109,10 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ]
+  ],
+  context: async ({ req }) => ({
+    delay: parseInt(req.headers.delay) || 0
+  })
 });
 
 const getHandler = (event, context) => {

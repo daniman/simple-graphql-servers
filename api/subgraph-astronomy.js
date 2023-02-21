@@ -3,12 +3,12 @@ const { ApolloServer, gql } =
     ? require('apollo-server-lambda')
     : require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
-const fetch = require('node-fetch');
 const {
   ApolloServerPluginLandingPageLocalDefault
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
+const { delayFetch } = require('../utils/utils');
 
 const typeDefs = gql`
   extend schema
@@ -30,10 +30,11 @@ const typeDefs = gql`
 
 const resolvers = {
   Location: {
-    __resolveReference: async ({ latitude, longitude }) => {
-      return await fetch(
+    __resolveReference: async ({ latitude, longitude }, { delay }) => {
+      return await delayFetch(
         'https://api.astronomyapi.com/api/v2/studio/moon-phase',
         {
+          delay: delay * 2,
           method: 'POST',
           body: JSON.stringify({
             format: 'svg',
@@ -95,7 +96,10 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ]
+  ],
+  context: async ({ req }) => ({
+    delay: parseInt(req.headers.delay) || 0
+  })
 });
 
 const getHandler = (event, context) => {

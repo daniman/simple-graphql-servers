@@ -3,13 +3,12 @@ const { ApolloServer, gql } =
     ? require('apollo-server-lambda')
     : require('apollo-server');
 const { buildSubgraphSchema } = require('@apollo/subgraph');
-const fetch = require('node-fetch');
 const {
   ApolloServerPluginLandingPageLocalDefault
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const utils = require('../utils/utils');
+const { delayFetch, snakeToCamel } = require('../utils/utils');
 
 const typeDefs = gql`
   extend schema
@@ -40,9 +39,10 @@ const typeDefs = gql`
 
 const resolvers = {
   Location: {
-    __resolveReference: async ({ latitude, longitude }) => {
-      return await fetch(
-        `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&formatted=0`
+    __resolveReference: async ({ latitude, longitude }, { delay }) => {
+      return await delayFetch(
+        `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&formatted=0`,
+        { delay: delay * 1 }
       )
         .then(async (res) => {
           if (res.ok) {
@@ -50,7 +50,7 @@ const resolvers = {
             return {
               latitude,
               longitude,
-              ...utils.snakeToCamel(response.results)
+              ...snakeToCamel(response.results)
             };
           } else {
             throw new Error('Error fetching data. Did you include an API Key?');
@@ -73,7 +73,10 @@ const server = new ApolloServer({
     ...(process.env.NODE_ENV === 'production'
       ? [ApolloServerPluginUsageReporting()]
       : [])
-  ]
+  ],
+  context: async ({ req }) => ({
+    delay: parseInt(req.headers.delay) || 0
+  })
 });
 
 const getHandler = (event, context) => {
