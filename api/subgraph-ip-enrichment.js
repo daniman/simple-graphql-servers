@@ -39,11 +39,13 @@ const resolvers = {
       throw new Error(message || 'Hello! This is the error you requested.');
     },
     ipLocation: async (_, { ip }, { delay }) => {
+      // console.log('key >>>>>', process.env.IP_INFO_KEY);
       return await delayFetch(
         `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`,
         { delay: delay * 0 }
       )
         .then(async (res) => {
+          // console.log(res);
           if (res.ok) {
             const response = await res.json();
             const [latitude, longitude] = response.loc.split(',');
@@ -87,7 +89,7 @@ const getHandler = (event, context) => {
   return graphqlHandler(event, context);
 };
 
-exports.handler = getHandler;
+exports.handler = getHandler();
 
 if (process.env.NODE_ENV !== 'production') {
   server
