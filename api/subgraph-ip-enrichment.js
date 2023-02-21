@@ -1,19 +1,11 @@
-const { ApolloServer, gql } =
-  process.env.NODE_ENV === 'production'
-    ? require('apollo-server-lambda')
-    : require('apollo-server');
-const { buildSubgraphSchema } = require('@apollo/subgraph');
+const { gql } = require('apollo-server');
 const {
-  ApolloServerPluginLandingPageLocalDefault
-} = require('apollo-server-core');
-const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
-const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const { snakeToCamel, delayFetch } = require('../utils/utils');
-const { typeDefs: scalarTypeDefs } = require('graphql-scalars');
+  snakeToCamel,
+  delayFetch,
+  buildApolloServer
+} = require('../utils/utils');
 
 const typeDefs = gql`
-  ${scalarTypeDefs}
-
   extend schema
     @link(
       url: "https://specs.apollo.dev/federation/v2.0"
@@ -62,33 +54,34 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({
-  introspection: true,
-  apollo: {
-    graphRef: 'simple-servers2@ip-enrichment'
-  },
-  schema: buildSubgraphSchema({ typeDefs, resolvers }),
-  plugins: [
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ApolloServerPluginInlineTrace(),
-    ...(process.env.NODE_ENV === 'production'
-      ? [ApolloServerPluginUsageReporting()]
-      : [])
-  ],
-  context: async ({ req, event }) => {
-    /**
-     * we have to do this unfortunately because in the apollo-server package, we key off `req`
-     * but in the apollo-server-lambda package we need to key off `event`
-     */
-    return {
-      delay: !!req
-        ? parseInt(req.headers.delay)
-        : !!event
-        ? parseInt(event.headers.delay)
-        : 0
-    };
-  }
-});
+// const server = new ApolloServer({
+//   introspection: true,
+//   apollo: {
+//     graphRef: 'simple-servers2@ip-enrichment'
+//   },
+//   schema: buildSubgraphSchema({ typeDefs, resolvers }),
+//   plugins: [
+//     ApolloServerPluginLandingPageLocalDefault({ embed: true }),
+//     ApolloServerPluginInlineTrace(),
+//     ...(process.env.NODE_ENV === 'production'
+//       ? [ApolloServerPluginUsageReporting()]
+//       : [])
+//   ],
+//   context: async ({ req, event }) => {
+//     /**
+//      * we have to do this unfortunately because in the apollo-server package, we key off `req`
+//      * but in the apollo-server-lambda package we need to key off `event`
+//      */
+//     return {
+//       delay: !!req
+//         ? parseInt(req.headers.delay)
+//         : !!event
+//         ? parseInt(event.headers.delay)
+//         : 0
+//     };
+//   }
+// });
+const server = buildApolloServer('ip-enrichment', typeDefs, resolvers);
 
 const getHandler = (event, context) => {
   const graphqlHandler = server.createHandler();
