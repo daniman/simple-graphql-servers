@@ -75,12 +75,18 @@ const server = new ApolloServer({
       ? [ApolloServerPluginUsageReporting()]
       : [])
   ],
-  context: async (...other) => {
-    console.log('other >>>>>>>>>>', other);
-    // return {
-    //   delay: parseInt(req.headers.delay) || 0
-    // };
-    return {};
+  context: async ({ req, event }) => {
+    /**
+     * we have to do this unfortunately because in the apollo-server package, we key off `req`
+     * but in the apollo-server-lambda package we need to key off `event`
+     */
+    return {
+      delay: req.headers
+        ? parseInt(req.headers.delay)
+        : event.headers
+        ? parseInt(event.headers.delay)
+        : 0
+    };
   }
 });
 
