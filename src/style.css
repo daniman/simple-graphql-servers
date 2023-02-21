@@ -18,6 +18,11 @@ pre {
   font-size: 0.8rem;
 }
 
+.apollo-explorer {
+  height: 600px;
+  margin-top: 40px;
+}
+
 .label {
   opacity: 0.4;
   margin-top: 10px;
