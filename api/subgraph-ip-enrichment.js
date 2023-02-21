@@ -39,13 +39,12 @@ const resolvers = {
       throw new Error(message || 'Hello! This is the error you requested.');
     },
     ipLocation: async (_, { ip }, { delay }) => {
-      // console.log('key >>>>>', process.env.IP_INFO_KEY);
       return await delayFetch(
         `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`,
         { delay: delay * 0 }
       )
         .then(async (res) => {
-          // console.log(res);
+          console.log(res);
           if (res.ok) {
             const response = await res.json();
             const [latitude, longitude] = response.loc.split(',');
@@ -76,9 +75,12 @@ const server = new ApolloServer({
       ? [ApolloServerPluginUsageReporting()]
       : [])
   ],
-  context: async ({ req }) => ({
-    delay: parseInt(req.headers.delay) || 0
-  })
+  context: async ({ req }) => {
+    console.log('req >>>>>>>>>>', req);
+    return {
+      delay: parseInt(req.headers.delay) || 0
+    };
+  }
 });
 
 const getHandler = (event, context) => {
