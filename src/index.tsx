@@ -1,12 +1,25 @@
 import ReactDOM from 'react-dom/client';
-import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  createHttpLink,
+  ApolloLink
+} from '@apollo/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './style.css';
 import { DemoPage } from './DemoPage';
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: 'https://main--locality.apollographos.net/graphql',
-  cache: new InMemoryCache()
+  headers: {
+    delay: 3000
+  }
+});
+
+const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.from([httpLink])
 });
 
 const router = createBrowserRouter([

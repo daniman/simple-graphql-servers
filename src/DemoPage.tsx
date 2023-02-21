@@ -8,6 +8,7 @@ export const DemoPage = () => {
   const [ipAddress, setIpAddress] = useState<string>();
 
   useEffect(() => {
+    // fetch IP address for this internet connection
     fetch('https://ident.me')
       .then((res) => res.text())
       .then((res) => {

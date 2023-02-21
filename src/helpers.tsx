@@ -23,6 +23,6 @@ export const Datum = ({ value }: { value?: string | number }) => {
   return value ? (
     <b>{value}</b>
   ) : (
-    <span className="tertiary">{loading ? 'loading...' : 'unavailable'}</span>
+    <span className="tertiary">{loading ? 'loading...' : 'loading...'}</span>
   );
 };
