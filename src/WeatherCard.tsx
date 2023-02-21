@@ -75,22 +75,22 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
         <div>
           🌡️ The temperature is{' '}
           <ProgressiveLoad
-            value={data?.ipLocation?.temperature}
+            value={`${data?.ipLocation?.temperature}°`}
             loading={loading}
           />{' '}
           (feels like{' '}
           <ProgressiveLoad
-            value={data?.ipLocation?.feelsLike}
+            value={`${data?.ipLocation?.feelsLike}°`}
             loading={loading}
           />
           ) with a high of{' '}
           <ProgressiveLoad
-            value={data?.ipLocation?.tempMax}
+            value={`${data?.ipLocation?.tempMax}°`}
             loading={loading}
           />{' '}
           and a low of{' '}
           <ProgressiveLoad
-            value={data?.ipLocation?.tempMin}
+            value={`${data?.ipLocation?.tempMin}°`}
             loading={loading}
           />
           .
