@@ -89,7 +89,7 @@ const getHandler = (event, context) => {
   return graphqlHandler(event, context);
 };
 
-exports.handler = getHandler();
+exports.handler = getHandler;
 
 if (process.env.NODE_ENV !== 'production') {
   server
