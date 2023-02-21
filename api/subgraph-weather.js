@@ -34,6 +34,7 @@ const typeDefs = gql`
 const resolvers = {
   Location: {
     __resolveReference: async ({ latitude, longitude }, { delay }) => {
+      console.log(delay);
       return await delayFetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=f07ae920c19fb5d89d65c0ca5d235b1f`,
         { delay: delay * DELAY_MULTIPLIER }

@@ -60,9 +60,9 @@ const buildApolloServer = (subgraphName, typeDefs, resolvers) => {
        */
       return {
         delay: !!req
-          ? parseInt(req.headers.delay)
+          ? parseInt(req.headers.delay) || 0
           : !!event
-          ? parseInt(event.headers.delay)
+          ? parseInt(event.headers.delay) || 0
           : 0
       };
     }
