@@ -1,15 +1,14 @@
-const { ApolloServer, gql } =
+const { gql } =
   process.env.NODE_ENV === 'production'
     ? require('apollo-server-lambda')
     : require('apollo-server');
-const { buildSubgraphSchema } = require('@apollo/subgraph');
-const fetch = require('node-fetch');
 const {
-  ApolloServerPluginLandingPageLocalDefault
-} = require('apollo-server-core');
-const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
-const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const { delayFetch, snakeToCamel } = require('../utils/utils');
+  delayFetch,
+  snakeToCamel,
+  buildApolloServer
+} = require('../utils/utils');
+
+const DELAY_MULTIPLIER = 0;
 
 const typeDefs = gql`
   extend schema
@@ -21,11 +20,6 @@ const typeDefs = gql`
   type Query {
     address(streetAddress: String!): Location
   }
-
-  # type MemberSessionDetails @key(fields: "office") {
-  #   office: String!
-  #   location: Location
-  # }
 
   type Location @key(fields: "latitude longitude") {
     latitude: Float
@@ -40,11 +34,12 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    address: async (_, { streetAddress }) => {
-      return await fetch(
+    address: async (_, { streetAddress }, { delay }) => {
+      return await delayFetch(
         `http://api.positionstack.com/v1/forward?access_key=${
           process.env.POSITION_STACK_KEY
-        }&query=${encodeURI(streetAddress)}`
+        }&query=${encodeURI(streetAddress)}`,
+        { delay: delay * DELAY_MULTIPLIER }
       )
         .then(async (res) => {
           if (res.ok) {
@@ -57,32 +52,11 @@ const resolvers = {
         .catch((err) => new Error(err));
     }
   },
-  MemberSessionDetails: {
-    __resolveReference: async ({ office }) => {
-      return await fetch(
-        `http://api.positionstack.com/v1/forward?access_key=${
-          process.env.POSITION_STACK_KEY
-        }&query=${encodeURI(office)}`
-      )
-        .then(async (res) => {
-          if (res.ok) {
-            const response = await res.json();
-            return {
-              office,
-              location: snakeToCamel(response.data[0])
-            };
-          } else {
-            throw new Error('Error fetching data. Did you include an API Key?');
-          }
-        })
-        .catch((err) => new Error(err));
-    }
-  },
   Location: {
     __resolveReference: async ({ latitude, longitude }, { delay }) => {
       return await delayFetch(
         `http://api.positionstack.com/v1/reverse?access_key=${process.env.POSITION_STACK_KEY}&query=${latitude},${longitude}`,
-        { delay: delay * 0 }
+        { delay: delay * DELAY_MULTIPLIER }
       )
         .then(async (res) => {
           if (res.ok) {
@@ -97,23 +71,7 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({
-  introspection: true,
-  apollo: {
-    graphRef: 'simple-servers2@address-enrichment'
-  },
-  schema: buildSubgraphSchema({ typeDefs, resolvers }),
-  plugins: [
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ApolloServerPluginInlineTrace(),
-    ...(process.env.NODE_ENV === 'production'
-      ? [ApolloServerPluginUsageReporting()]
-      : [])
-  ],
-  context: async ({ req }) => ({
-    delay: parseInt(req.headers.delay) || 0
-  })
-});
+const server = buildApolloServer('address-enrichment', typeDefs, resolvers);
 
 const getHandler = (event, context) => {
   const graphqlHandler = server.createHandler();

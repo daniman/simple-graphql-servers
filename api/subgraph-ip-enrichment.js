@@ -5,6 +5,8 @@ const {
   buildApolloServer
 } = require('../utils/utils');
 
+const DELAY_MULTIPLIER = 0;
+
 const typeDefs = gql`
   extend schema
     @link(
@@ -14,7 +16,6 @@ const typeDefs = gql`
 
   type Query {
     ipLocation(ip: String!): Location
-    # giveError(message: String): String
   }
 
   type Location @key(fields: "latitude longitude") {
@@ -27,16 +28,12 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    giveError: (_, { message }) => {
-      throw new Error(message || 'Hello! This is the error you requested.');
-    },
     ipLocation: async (_, { ip }, { delay }) => {
       return await delayFetch(
         `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`,
-        { delay: delay * 0 }
+        { delay: delay * DELAY_MULTIPLIER }
       )
         .then(async (res) => {
-          console.log(res);
           if (res.ok) {
             const response = await res.json();
             const [latitude, longitude] = response.loc.split(',');
@@ -54,33 +51,6 @@ const resolvers = {
   }
 };
 
-// const server = new ApolloServer({
-//   introspection: true,
-//   apollo: {
-//     graphRef: 'simple-servers2@ip-enrichment'
-//   },
-//   schema: buildSubgraphSchema({ typeDefs, resolvers }),
-//   plugins: [
-//     ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-//     ApolloServerPluginInlineTrace(),
-//     ...(process.env.NODE_ENV === 'production'
-//       ? [ApolloServerPluginUsageReporting()]
-//       : [])
-//   ],
-//   context: async ({ req, event }) => {
-//     /**
-//      * we have to do this unfortunately because in the apollo-server package, we key off `req`
-//      * but in the apollo-server-lambda package we need to key off `event`
-//      */
-//     return {
-//       delay: !!req
-//         ? parseInt(req.headers.delay)
-//         : !!event
-//         ? parseInt(event.headers.delay)
-//         : 0
-//     };
-//   }
-// });
 const server = buildApolloServer('ip-enrichment', typeDefs, resolvers);
 
 const getHandler = (event, context) => {

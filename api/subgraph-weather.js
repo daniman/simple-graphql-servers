@@ -1,14 +1,11 @@
-const { ApolloServer, gql } =
-  process.env.NODE_ENV === 'production'
-    ? require('apollo-server-lambda')
-    : require('apollo-server');
-const { buildSubgraphSchema } = require('@apollo/subgraph');
+const { gql } = require('apollo-server');
 const {
-  ApolloServerPluginLandingPageLocalDefault
-} = require('apollo-server-core');
-const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
-const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const { kelvinToFahrenheit, delayFetch } = require('../utils/utils');
+  kelvinToFahrenheit,
+  delayFetch,
+  buildApolloServer
+} = require('../utils/utils');
+
+const DELAY_MULTIPLIER = 1;
 
 const typeDefs = gql`
   extend schema
@@ -39,7 +36,7 @@ const resolvers = {
     __resolveReference: async ({ latitude, longitude }, { delay }) => {
       return await delayFetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&APPID=f07ae920c19fb5d89d65c0ca5d235b1f`,
-        { delay: delay * 1 }
+        { delay: delay * DELAY_MULTIPLIER }
       )
         .then(async (res) => {
           if (res.ok) {
@@ -67,23 +64,7 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({
-  introspection: true,
-  apollo: {
-    graphRef: 'simple-servers2@weather'
-  },
-  schema: buildSubgraphSchema({ typeDefs, resolvers }),
-  plugins: [
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ApolloServerPluginInlineTrace(),
-    ...(process.env.NODE_ENV === 'production'
-      ? [ApolloServerPluginUsageReporting()]
-      : [])
-  ],
-  context: async ({ req }) => ({
-    delay: parseInt(req.headers.delay) || 0
-  })
-});
+const server = buildApolloServer('weather', typeDefs, resolvers);
 
 const getHandler = (event, context) => {
   const graphqlHandler = server.createHandler();

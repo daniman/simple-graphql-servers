@@ -1,14 +1,11 @@
-const { ApolloServer, gql } =
-  process.env.NODE_ENV === 'production'
-    ? require('apollo-server-lambda')
-    : require('apollo-server');
-const { buildSubgraphSchema } = require('@apollo/subgraph');
+const { gql } = require('apollo-server');
 const {
-  ApolloServerPluginLandingPageLocalDefault
-} = require('apollo-server-core');
-const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
-const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
-const { delayFetch, snakeToCamel } = require('../utils/utils');
+  delayFetch,
+  snakeToCamel,
+  buildApolloServer
+} = require('../utils/utils');
+
+const DELAY_MULTIPLIER = 1;
 
 const typeDefs = gql`
   extend schema
@@ -42,7 +39,7 @@ const resolvers = {
     __resolveReference: async ({ latitude, longitude }, { delay }) => {
       return await delayFetch(
         `https://api.sunrise-sunset.org/json?lat=${latitude}&lng=${longitude}&formatted=0`,
-        { delay: delay * 1 }
+        { delay: delay * DELAY_MULTIPLIER }
       )
         .then(async (res) => {
           if (res.ok) {
@@ -61,23 +58,7 @@ const resolvers = {
   }
 };
 
-const server = new ApolloServer({
-  introspection: true,
-  apollo: {
-    graphRef: 'simple-servers2@daylight'
-  },
-  schema: buildSubgraphSchema({ typeDefs, resolvers }),
-  plugins: [
-    ApolloServerPluginLandingPageLocalDefault({ embed: true }),
-    ApolloServerPluginInlineTrace(),
-    ...(process.env.NODE_ENV === 'production'
-      ? [ApolloServerPluginUsageReporting()]
-      : [])
-  ],
-  context: async ({ req }) => ({
-    delay: parseInt(req.headers.delay) || 0
-  })
-});
+const server = buildApolloServer('daylight', typeDefs, resolvers);
 
 const getHandler = (event, context) => {
   const graphqlHandler = server.createHandler();
