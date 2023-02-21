@@ -1,0 +1,8 @@
+include_subgraph_errors:
+  all: true
+headers:
+  subgraphs:
+    congress:
+      request:
+        - propagate:
+            matching: '.*'
