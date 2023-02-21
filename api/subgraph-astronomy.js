@@ -40,7 +40,9 @@ const resolvers = {
             format: 'svg',
             style: {
               moonStyle: 'default',
-              backgroundStyle: 'stars'
+              backgroundStyle: 'stars',
+              headingColor: 'white',
+              textColor: 'white'
             },
             observer: {
               latitude,
