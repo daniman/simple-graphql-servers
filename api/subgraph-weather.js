@@ -9,6 +9,7 @@ const {
 } = require('apollo-server-core');
 const { ApolloServerPluginUsageReporting } = require('apollo-server-core');
 const { ApolloServerPluginInlineTrace } = require('apollo-server-core');
+const utils = require('../utils/utils');
 
 const typeDefs = gql`
   extend schema
@@ -49,10 +50,10 @@ const resolvers = {
               weather: response.weather[0]
                 ? response.weather[0].description
                 : undefined,
-              temperature: response.main.temp,
-              feelsLike: response.main.feels_like,
-              tempMin: response.main.temp_min,
-              tempMax: response.main.temp_max,
+              temperature: utils.kelvinToFahrenheit(response.main.temp),
+              feelsLike: utils.kelvinToFahrenheit(response.main.feels_like),
+              tempMin: utils.kelvinToFahrenheit(response.main.temp_min),
+              tempMax: utils.kelvinToFahrenheit(response.main.temp_max),
               pressure: response.main.pressure,
               humidity: response.main.humidity,
               windSpeed: response.wind.speed

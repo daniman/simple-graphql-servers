@@ -1,5 +1,4 @@
 import { gql, useQuery } from '@apollo/client';
-import { kelvinToFahrenheit } from './helpers';
 import { ProgressiveLoad } from './ProgressiveLoad';
 
 export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
@@ -76,22 +75,22 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
         <div>
           🌡️ The temperature is{' '}
           <ProgressiveLoad
-            value={kelvinToFahrenheit(data?.ipLocation?.temperature)}
+            value={data?.ipLocation?.temperature}
             loading={loading}
           />{' '}
           (feels like{' '}
           <ProgressiveLoad
-            value={kelvinToFahrenheit(data?.ipLocation?.feelsLike)}
+            value={data?.ipLocation?.feelsLike}
             loading={loading}
           />
           ) with a high of{' '}
           <ProgressiveLoad
-            value={kelvinToFahrenheit(data?.ipLocation?.tempMax)}
+            value={data?.ipLocation?.tempMax}
             loading={loading}
           />{' '}
           and a low of{' '}
           <ProgressiveLoad
-            value={kelvinToFahrenheit(data?.ipLocation?.tempMin)}
+            value={data?.ipLocation?.tempMin}
             loading={loading}
           />
           .
