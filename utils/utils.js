@@ -60,7 +60,7 @@ const buildApolloServer = (subgraphName, typeDefs, resolvers) => {
         ? parseInt(event.headers.delay) || 0
         : 0;
       console.log('delay from utils >>>>', delay);
-      console.log(req, event);
+      console.log(event.headers);
       /**
        * we have to do this unfortunately because in the apollo-server package, we key off `req`
        * but in the apollo-server-lambda package we need to key off `event`
