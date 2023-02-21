@@ -75,11 +75,12 @@ const server = new ApolloServer({
       ? [ApolloServerPluginUsageReporting()]
       : [])
   ],
-  context: async ({ req }) => {
-    console.log('req >>>>>>>>>>', req);
-    return {
-      delay: parseInt(req.headers.delay) || 0
-    };
+  context: async (...other) => {
+    console.log('other >>>>>>>>>>', other);
+    // return {
+    //   delay: parseInt(req.headers.delay) || 0
+    // };
+    return {};
   }
 });
 
