@@ -29,6 +29,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     ipLocation: async (_, { ip }, { delay }) => {
+      console.log('delay from resolver >>>', delay);
       return await delayFetch(
         `https://ipinfo.io/${encodeURI(ip)}?token=${process.env.IP_INFO_KEY}`,
         { delay: delay * DELAY_MULTIPLIER }
