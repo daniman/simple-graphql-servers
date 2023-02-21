@@ -18,7 +18,7 @@ const snakeToCamel = (object) => {
 };
 
 const kelvinToFahrenheit = (kelvin) =>
-  kelvin ? `${(1.8 * (kelvin - 273) + 32).toFixed(0)}°` : undefined;
+  kelvin ? (1.8 * (kelvin - 273) + 32).toFixed(0) : undefined;
 
 exports.snakeToCamel = snakeToCamel;
 exports.kelvinToFahrenheit = kelvinToFahrenheit;
