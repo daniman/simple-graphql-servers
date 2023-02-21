@@ -5,7 +5,7 @@ import './style.css';
 import { DemoPage } from './DemoPage';
 
 const client = new ApolloClient({
-  uri: 'https://main--congress2.apollographos.net/graphql',
+  uri: 'https://main--locality.apollographos.net/graphql',
   cache: new InMemoryCache()
 });
 
