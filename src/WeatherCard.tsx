@@ -26,6 +26,9 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
             sunrise
             sunset
           }
+          ... on Location @defer {
+            moonPhaseImg
+          }
         }
       }
     `,
@@ -35,80 +38,103 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
   );
 
   return (
-    <div>
-      <div>
-        💻 Your IP address is <b>{ipAddress}</b>
-      </div>
-      <div>
-        🌐 Your lat/long is{' '}
-        <ProgressiveLoad value={data?.ipLocation?.latitude} loading={loading} />
-        /
+    <div style={{ display: 'flex' }}>
+      <div style={{ flex: 1 }}>
+        <div>
+          💻 Your IP address is <b>{ipAddress}</b>
+        </div>
+        <div>
+          🌐 Your lat/long is{' '}
+          <ProgressiveLoad
+            value={data?.ipLocation?.latitude}
+            loading={loading}
+          />
+          /
+          <ProgressiveLoad
+            value={data?.ipLocation?.longitude}
+            loading={loading}
+          />
+          .
+        </div>
+        <div>
+          🏠 Neighbourhood:{' '}
+          <ProgressiveLoad
+            value={data?.ipLocation?.neighbourhood}
+            loading={loading}
+          />
+        </div>
+        <div>
+          ☁️ The weather today is{' '}
+          <ProgressiveLoad
+            value={data?.ipLocation?.weather}
+            loading={loading}
+          />{' '}
+          in{' '}
+          <ProgressiveLoad value={data?.ipLocation?.county} loading={loading} />
+          .
+        </div>
+        <div>
+          🌡️ The temperature is{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.temperature)}
+            loading={loading}
+          />{' '}
+          (feels like{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.feelsLike)}
+            loading={loading}
+          />
+          ) with a high of{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.tempMax)}
+            loading={loading}
+          />{' '}
+          and a low of{' '}
+          <ProgressiveLoad
+            value={kelvinToFahrenheit(data?.ipLocation?.tempMin)}
+            loading={loading}
+          />
+          .
+        </div>
+        <div>
+          🌅 Sunrise is at{' '}
+          <ProgressiveLoad
+            value={
+              data?.ipLocation?.sunrise
+                ? new Date(data?.ipLocation?.sunrise).toLocaleTimeString(
+                    'en-US'
+                  )
+                : undefined
+            }
+            loading={loading}
+          />
+          .
+        </div>
+        <div>
+          🌇 Sunset is at{' '}
+          <ProgressiveLoad
+            value={
+              data?.ipLocation?.sunset
+                ? new Date(data?.ipLocation?.sunset).toLocaleTimeString('en-US')
+                : undefined
+            }
+            loading={loading}
+          />
+          .
+        </div>
+        🌔 The moon phase today is{' '}
         <ProgressiveLoad
-          value={data?.ipLocation?.longitude}
+          value={data?.ipLocation?.moonPhaseImg ? '➡️' : undefined}
           loading={loading}
         />
-        .
       </div>
-      <div>
-        🏠 Neighbourhood:{' '}
-        <ProgressiveLoad
-          value={data?.ipLocation?.neighbourhood}
-          loading={loading}
+      {data?.ipLocation?.moonPhaseImg && (
+        <img
+          height="168"
+          src={data?.ipLocation?.moonPhaseImg}
+          alt="The moon phase today at the provided latitude and longitude."
         />
-      </div>
-      <div>
-        ☁️ The weather today is{' '}
-        <ProgressiveLoad value={data?.ipLocation?.weather} loading={loading} />{' '}
-        in{' '}
-        <ProgressiveLoad value={data?.ipLocation?.county} loading={loading} />.
-      </div>
-      <div>
-        🌡️ The temperature is{' '}
-        <ProgressiveLoad
-          value={kelvinToFahrenheit(data?.ipLocation?.temperature)}
-          loading={loading}
-        />{' '}
-        (feels like{' '}
-        <ProgressiveLoad
-          value={kelvinToFahrenheit(data?.ipLocation?.feelsLike)}
-          loading={loading}
-        />
-        ) with a high of{' '}
-        <ProgressiveLoad
-          value={kelvinToFahrenheit(data?.ipLocation?.tempMax)}
-          loading={loading}
-        />{' '}
-        and a low of{' '}
-        <ProgressiveLoad
-          value={kelvinToFahrenheit(data?.ipLocation?.tempMin)}
-          loading={loading}
-        />
-        .
-      </div>
-      <div>
-        🌅 Sunrise is at{' '}
-        <ProgressiveLoad
-          value={
-            data?.ipLocation?.sunrise
-              ? new Date(data?.ipLocation?.sunrise).toLocaleTimeString('en-US')
-              : undefined
-          }
-          loading={loading}
-        />
-        .
-      </div>
-      <div>
-        🌇 Sunset is at{' '}
-        <ProgressiveLoad
-          value={
-            data?.ipLocation?.sunset
-              ? new Date(data?.ipLocation?.sunset).toLocaleTimeString('en-US')
-              : undefined
-          }
-          loading={loading}
-        />
-        .
-      </div>
+      )}
     </div>
   );
 };

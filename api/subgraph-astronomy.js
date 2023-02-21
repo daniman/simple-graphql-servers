@@ -37,13 +37,10 @@ const resolvers = {
         {
           method: 'POST',
           body: JSON.stringify({
-            format: 'png',
+            format: 'svg',
             style: {
-              moonStyle: 'sketch',
-              backgroundStyle: 'solid',
-              backgroundColor: 'transparent',
-              headingColor: 'black',
-              textColor: 'black'
+              moonStyle: 'default',
+              backgroundStyle: 'stars'
             },
             observer: {
               latitude,
@@ -59,7 +56,7 @@ const resolvers = {
               ].join('-')
             },
             view: {
-              type: 'portrait-simple',
+              type: 'landscape-simple',
               orientation: 'south-up'
             }
           }),
