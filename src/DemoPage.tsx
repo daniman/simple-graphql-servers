@@ -25,7 +25,7 @@ export const DemoPage = () => {
 };
 
 const LocalityInfo = ({ ipAddress }: { ipAddress: string }) => {
-  const { data, loading, error } = useQuery(
+  const { data, loading } = useQuery(
     gql`
       query IpLocation($ip: String!) {
         ipLocation(ip: $ip) {
@@ -38,8 +38,6 @@ const LocalityInfo = ({ ipAddress }: { ipAddress: string }) => {
       variables: { ip: ipAddress }
     }
   );
-
-  if (error) return <div style={{ color: 'red' }}>{error.message}</div>;
 
   return (
     <LoadingContext.Provider value={loading}>
