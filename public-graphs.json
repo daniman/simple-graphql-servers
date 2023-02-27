@@ -5,11 +5,6 @@
     "description": "Enriches an IP address with latitude, longitude, postal code, and timezone."
   },
   {
-    "subgraph": "Address Enrichment",
-    "href": "https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment",
-    "description": "Enriches a street address with latitude, longitude, and locality information."
-  },
-  {
     "subgraph": "Astronomy",
     "href": "https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-astronomy",
     "description": "Enriches a latitude and longitude with a picture of the moon, as seen from that spot today."
@@ -23,5 +18,10 @@
     "subgraph": "Sunrise Sunset",
     "href": "https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-daylight",
     "description": "Enriches a latitude and longitude with sunrise and sunset information."
+  },
+  {
+    "subgraph": "Address Enrichment",
+    "href": "https://simple-graphql-servers.netlify.app/.netlify/functions/subgraph-address-enrichment",
+    "description": "Enriches a street address with latitude, longitude, and locality information."
   }
 ]

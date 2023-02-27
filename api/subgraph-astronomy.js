@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server');
 const { delayFetch, buildApolloServer } = require('../utils/utils');
 
-const DELAY_MULTIPLIER = 2;
+const DELAY_MULTIPLIER = 1;
 
 const typeDefs = gql`
   extend schema
