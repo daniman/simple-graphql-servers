@@ -11,10 +11,7 @@ import './style.css';
 import { DemoPage } from './DemoPage';
 
 const httpLink = createHttpLink({
-  uri: 'https://main--locality.apollographos.net/graphql',
-  headers: {
-    delay: 3000
-  }
+  uri: 'https://simple-connector.onrender.com/'
 });
 
 const client = new ApolloClient({

@@ -27,8 +27,8 @@ export const DemoPage = () => {
 const LocalityInfo = ({ ipAddress }: { ipAddress: string }) => {
   const { data, loading } = useQuery(
     gql`
-      query IpLocation($ip: String!) {
-        ipLocation(ip: $ip) {
+      query Location($ip: String!) {
+        locateIp(ip: $ip) {
           latitude
           longitude
         }
@@ -45,8 +45,8 @@ const LocalityInfo = ({ ipAddress }: { ipAddress: string }) => {
         Your IP address is <b>{ipAddress}</b>
       </Row>
       <Row emoji="🌐">
-        Your lat/long is <Datum value={data?.ipLocation?.latitude} />/
-        <Datum value={data?.ipLocation?.longitude} />.
+        Your lat/long is <Datum value={data?.locateIp?.latitude} />/
+        <Datum value={data?.locateIp?.longitude} />.
       </Row>
     </LoadingContext.Provider>
   );
