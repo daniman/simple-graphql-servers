@@ -33,7 +33,7 @@ export const DemoPage = () => {
 
       <ApolloExplorer
         className="apollo-explorer"
-        graphRef="congress2@main"
+        graphRef="simple-connectors@current"
         persistExplorerState={true}
         initialState={{
           document: `# Hit the blue EnrichAddress
@@ -44,10 +44,6 @@ export const DemoPage = () => {
               ... on Location @defer {
                 latitude
                 longitude
-              }
-              ... on Location @defer {
-                neighbourhood
-                county
               }
               ... on Location @defer {
                 weather

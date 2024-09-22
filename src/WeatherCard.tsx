@@ -5,14 +5,10 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
   const { data, loading } = useQuery(
     gql`
       query ($ipAddress: String!) {
-        ipLocation(ip: $ipAddress) {
+        locateIp(ip: $ipAddress) {
           ... on Location @defer {
             latitude
             longitude
-          }
-          ... on Location @defer {
-            neighbourhood
-            county
           }
           ... on Location @defer {
             weather
@@ -44,53 +40,37 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
         </div>
         <div>
           🌐 Your lat/long is{' '}
-          <ProgressiveLoad
-            value={data?.ipLocation?.latitude}
-            loading={loading}
-          />
+          <ProgressiveLoad value={data?.locateIp?.latitude} loading={loading} />
           /
           <ProgressiveLoad
-            value={data?.ipLocation?.longitude}
+            value={data?.locateIp?.longitude}
             loading={loading}
           />
           .
-        </div>
-        <div>
-          🏠 Neighbourhood:{' '}
-          <ProgressiveLoad
-            value={data?.ipLocation?.neighbourhood}
-            loading={loading}
-          />
         </div>
         <div>
           ☁️ The weather today is{' '}
-          <ProgressiveLoad
-            value={data?.ipLocation?.weather}
-            loading={loading}
-          />{' '}
-          in{' '}
-          <ProgressiveLoad value={data?.ipLocation?.county} loading={loading} />
-          .
+          <ProgressiveLoad value={data?.locateIp?.weather} loading={loading} />.
         </div>
         <div>
           🌡️ The temperature is{' '}
           <ProgressiveLoad
-            value={`${data?.ipLocation?.temperature}°`}
+            value={`${data?.locateIp?.temperature}°`}
             loading={loading}
           />{' '}
           (feels like{' '}
           <ProgressiveLoad
-            value={`${data?.ipLocation?.feelsLike}°`}
+            value={`${data?.locateIp?.feelsLike}°`}
             loading={loading}
           />
           ) with a high of{' '}
           <ProgressiveLoad
-            value={`${data?.ipLocation?.tempMax}°`}
+            value={`${data?.locateIp?.tempMax}°`}
             loading={loading}
           />{' '}
           and a low of{' '}
           <ProgressiveLoad
-            value={`${data?.ipLocation?.tempMin}°`}
+            value={`${data?.locateIp?.tempMin}°`}
             loading={loading}
           />
           .
@@ -99,10 +79,8 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
           🌅 Sunrise is at{' '}
           <ProgressiveLoad
             value={
-              data?.ipLocation?.sunrise
-                ? new Date(data?.ipLocation?.sunrise).toLocaleTimeString(
-                    'en-US'
-                  )
+              data?.locateIp?.sunrise
+                ? new Date(data?.locateIp?.sunrise).toLocaleTimeString('en-US')
                 : undefined
             }
             loading={loading}
@@ -113,8 +91,8 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
           🌇 Sunset is at{' '}
           <ProgressiveLoad
             value={
-              data?.ipLocation?.sunset
-                ? new Date(data?.ipLocation?.sunset).toLocaleTimeString('en-US')
+              data?.locateIp?.sunset
+                ? new Date(data?.locateIp?.sunset).toLocaleTimeString('en-US')
                 : undefined
             }
             loading={loading}
@@ -123,14 +101,14 @@ export const WeatherCard = ({ ipAddress }: { ipAddress: string }) => {
         </div>
         🌔 The moon phase today is{' '}
         <ProgressiveLoad
-          value={data?.ipLocation?.moonPhaseImg ? '➡️' : undefined}
+          value={data?.locateIp?.moonPhaseImg ? '➡️' : undefined}
           loading={loading}
         />
       </div>
-      {data?.ipLocation?.moonPhaseImg && (
+      {data?.locateIp?.moonPhaseImg && (
         <img
           height="168"
-          src={data?.ipLocation?.moonPhaseImg}
+          src={data?.locateIp?.moonPhaseImg}
           alt="The moon phase today at the provided latitude and longitude."
         />
       )}
